@@ -19,11 +19,30 @@ if (process.env.NODE_ENV === "development") {
 // Mount routes
 app.use("/api/v1/categories", categoryRoutes);
 
+// handle routes that are not defined
+app.all('*splat', (req, res, next) => {
+  const error = new Error("Route Not Found :" + req.originalUrl);
+  error.statusCode = 404;
+  next(error);
+});
+
 // error handling middleware
 app.use((err, req, res, next) => {
-  const statusCode = err.statusCode || 500;
-  const message = err.message || "Internal Server Error";
-  res.status(statusCode).json({ err });
+  err.statusCode = err.statusCode || 500;
+  err.status = err.status || "error";
+  if (process.env.NODE_ENV === "development") {
+    res.status(err.statusCode).json({
+      status: err.status,
+      error: err,
+      message: err.message,
+      stack: err.stack,
+    });
+  } else {
+    res.status(err.statusCode).json({
+      status: err.status,
+      message: err.message,
+    });
+  }
 });
 
 // ------------------------------------------------
