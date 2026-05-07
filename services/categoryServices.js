@@ -12,6 +12,7 @@ exports.createCategory = asyncHandler(async (req, res) => {
   res.status(201).json(savedCategory); // نرسل البيانات التي تم حفظها فعلياً
 });
 
+
 exports.getCategories = asyncHandler(async (req, res) => {
   const page = req.query.page * 1 || 1;
   const limit = req.query.limit * 1 || 20;

@@ -9,15 +9,22 @@ const app = express();
 
 dbConnection();
 // Middleware
-app.use(express.json());    // parse request body into JSON
+app.use(express.json()); // parse request body into JSON
 
-if(process.env.NODE_ENV === "development") {
-  app.use(morgan("dev"));  // logging requests
+if (process.env.NODE_ENV === "development") {
+  app.use(morgan("dev")); // logging requests
 }
 //---------------------------------
 
 // Mount routes
 app.use("/api/v1/categories", categoryRoutes);
+
+// error handling middleware
+app.use((err, req, res, next) => {
+  const statusCode = err.statusCode || 500;
+  const message = err.message || "Internal Server Error";
+  res.status(statusCode).json({ err });
+});
 
 // ------------------------------------------------
 
