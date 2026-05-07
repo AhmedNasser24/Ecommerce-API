@@ -25,7 +25,7 @@ app.all('*splat', (req, res, next) => {
   next(new ApiError("Route Not Found :" + req.originalUrl, 404));
 });
 
-// error handling middleware
+// error handling middleware for express
 app.use(errorHandler);
 
 // ------------------------------------------------
@@ -33,4 +33,13 @@ app.use(errorHandler);
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
+});
+
+
+// handle unhandled rejections
+process.on("unhandledRejection", (err) => {
+  console.log(`unhandledRejection Error: ${err.name} ${err.message}`);
+  server.close(() => {
+    process.exit(1);
+  });
 });

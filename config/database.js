@@ -5,10 +5,6 @@ const dbConnection = () => {
     .connect(process.env.MONGO_URI)
     .then((conn) => {
       console.log(`Database Connected: ${conn.connection.host}`);
-    })
-    .catch((err) => {
-      console.error(`Database Error: ${err}`);
-      process.exit(1);
     });
 };
 
