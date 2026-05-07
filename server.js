@@ -4,7 +4,8 @@ const morgan = require("morgan");
 
 const categoryRoutes = require("./routes/categoryRoute");
 const dbConnection = require("./config/database");
-
+const ApiError = require("./utils/ApiError");
+const { errorHandler } = require("./middlewares/errorMiddleWare");
 const app = express();
 
 dbConnection();
@@ -21,29 +22,11 @@ app.use("/api/v1/categories", categoryRoutes);
 
 // handle routes that are not defined
 app.all('*splat', (req, res, next) => {
-  const error = new Error("Route Not Found :" + req.originalUrl);
-  error.statusCode = 404;
-  next(error);
+  next(new ApiError("Route Not Found :" + req.originalUrl, 404));
 });
 
 // error handling middleware
-app.use((err, req, res, next) => {
-  err.statusCode = err.statusCode || 500;
-  err.status = err.status || "error";
-  if (process.env.NODE_ENV === "development") {
-    res.status(err.statusCode).json({
-      status: err.status,
-      error: err,
-      message: err.message,
-      stack: err.stack,
-    });
-  } else {
-    res.status(err.statusCode).json({
-      status: err.status,
-      message: err.message,
-    });
-  }
-});
+app.use(errorHandler);
 
 // ------------------------------------------------
 
