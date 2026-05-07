@@ -13,8 +13,10 @@
   "dependencies": {
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
+    "express-async-handler": "^1.2.0",
     "mongoose": "^9.6.1",
     "morgan": "^1.10.1",
-    "save": "^2.9.0"
+    "save": "^2.9.0",
+    "slugify": "^1.6.9"
   }
 }

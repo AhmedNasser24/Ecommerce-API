@@ -3,14 +3,12 @@ const express = require("express");
 
 const router = express.Router();
 
-const {createCategory} = require("../services/categoryServices");
+const {getCategories,createCategory} = require("../services/categoryServices");
 
 // @route   GET /categories
 // @desc    Get all categories
 // @access  Public
-router.get("/", (req, res) => {
-  res.send("Get all categories");
-});
+router.get("/", getCategories);
 
 // @route   GET /categories/:id
 // @desc    Get a single category by ID
