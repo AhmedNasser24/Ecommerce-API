@@ -23,7 +23,8 @@ exports.getCategories = asyncHandler(async (req, res) => {
 });
 
 exports.getCategory = asyncHandler(async (req, res , next) => {
-  const { id } = req.params;
+  const { id} = req.params;
+  console.log(id)
   const category = await CategoryModel.findById(id);
   if (!category) {
     return next(new ApiError(`Category with ID ${id} not found`, 404));

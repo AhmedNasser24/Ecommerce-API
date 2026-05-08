@@ -1,5 +1,5 @@
 const express = require("express");
-const dotenv = require("dotenv").config();
+require("dotenv").config();
 const morgan = require("morgan");
 
 const categoryRoutes = require("./routes/categoryRoute");
@@ -29,9 +29,8 @@ app.all('*splat', (req, res, next) => {
 app.use(errorHandler);
 
 // ------------------------------------------------
-
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
 

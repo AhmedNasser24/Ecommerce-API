@@ -10,7 +10,7 @@ exports.errorHandler = (err, req, res, next) => {
         });
     } else {
         res.status(err.statusCode).json({
-            status: err.status,
+            status: err.statu,
             message: err.message,
         });
     }
