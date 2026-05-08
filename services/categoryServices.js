@@ -9,7 +9,6 @@ exports.createCategory = asyncHandler(async (req, res) => {
   // نستخدم await لنضمن أن البرنامج "ينتظر" الحفظ قبل الانتقال للسطر التالي
   const savedCategory = await newCategory.save();
 
-  console.log("Category Saved:", savedCategory); // لرؤيتها في Terminal الماك ميني
   res.status(201).json(savedCategory); // نرسل البيانات التي تم حفظها فعلياً
 });
 
