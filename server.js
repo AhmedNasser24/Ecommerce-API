@@ -4,6 +4,7 @@ const morgan = require("morgan");
 
 const categoryRoutes = require("./routes/categoryRoute");
 const subcategoryRoutes = require("./routes/subcategoryRoute");
+const brandRoutes = require("./routes/brandRoute");
 const dbConnection = require("./config/database");
 const ApiError = require("./utils/ApiError");
 const { errorHandler } = require("./middlewares/errorMiddleWare");
@@ -21,6 +22,7 @@ if (process.env.NODE_ENV === "development") {
 // Mount routes
 app.use("/api/v1/categories", categoryRoutes);
 app.use("/api/v1/subcategories", subcategoryRoutes);
+app.use("/api/v1/brands", brandRoutes);
 
 // handle routes that are not defined
 app.all('*splat', (req, res, next) => {
