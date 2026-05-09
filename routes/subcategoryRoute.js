@@ -14,6 +14,8 @@ const {
     createSubcategoryValidator,
 } = require("../validators/subcategoryValidator");
 
+router.mergeParams = true;
+
 router.post("/", createSubcategoryValidator ,createSubcategory);
 router.get("/", getSubcategories);
 router.get("/:id", getSubcategoryValidator , getSubcategory);

@@ -10,8 +10,11 @@ exports.getSubcategories = asyncHandler(async (req, res, next) => {
   const page = req.query.page * 1 || 1;
   const limit = req.query.limit * 1 || 20;
   const skip = (page - 1) * limit;
-
-  let query = SubCategoryModel.find().skip(skip).limit(limit);
+  let filter = {};
+  if (req.params.categoryId) {
+    filter = { category: req.params.categoryId };
+  }
+  let query = SubCategoryModel.find(filter).skip(skip).limit(limit);
 
   if (req.query.populate) {
     query = query.populate({ path: "category", select: "name" });
