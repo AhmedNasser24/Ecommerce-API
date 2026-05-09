@@ -6,6 +6,7 @@ const {
   getSubcategories,
   updateSubcategory,
   deleteSubcategory,
+  setCategoryIdToBody,
 } = require("../services/subcategoryServices");
 const {
     getSubcategoryValidator,
@@ -16,10 +17,10 @@ const {
 
 router.mergeParams = true;
 
-router.post("/", createSubcategoryValidator ,createSubcategory);
-router.get("/", getSubcategories);
-router.get("/:id", getSubcategoryValidator , getSubcategory);
-router.put("/:id", updateSubcategoryValidator , updateSubcategory);
-router.delete("/:id", deleteSubcategoryValidator , deleteSubcategory);
+router.post("/",  setCategoryIdToBody, createSubcategoryValidator ,createSubcategory);
+router.get("/",   getSubcategories);
+router.get("/:id",  getSubcategoryValidator , getSubcategory);
+router.put("/:id",setCategoryIdToBody, updateSubcategoryValidator , updateSubcategory);
+router.delete("/:id",deleteSubcategoryValidator , deleteSubcategory);
 
 module.exports = router;

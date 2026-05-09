@@ -20,7 +20,7 @@ exports.getSubcategories = asyncHandler(async (req, res, next) => {
     query = query.populate({ path: "category", select: "name" });
   }
 
-  const subcategories = await query;
+  const subcategories =  await query;
 
   res.status(200).json({
     results: subcategories.length,
@@ -31,8 +31,10 @@ exports.getSubcategories = asyncHandler(async (req, res, next) => {
 
 exports.getSubcategory = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
+  const populate = req.query.populate;
   let query = SubCategoryModel.findById(id);
-  if (req.query.populate) {
+  if (populate) {
+    console.log(populate);
     query = query.populate({ path: "category", select: "name" });
   }
   const subcategory = await query;
@@ -75,5 +77,11 @@ exports.deleteSubcategory = asyncHandler(async (req, res, next) => {
   if (!subcategory) {
     return next(new ApiError("SubCategory not found", 404));
   }
-  res.status(200).json(subcategory);
+  res.status(204).send();
+});
+
+
+exports.setCategoryIdToBody = asyncHandler(async (req, res, next) => {
+  if (!req.body.category) req.body.category = req.params.categoryId;
+  next();
 });
