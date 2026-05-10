@@ -1,5 +1,5 @@
 const BrandModel = require("../models/brandModel");
-const ApiError = require("../utils/ApiError");
+const ApiError = require("../../../utils/ApiError");
 const slugify = require("slugify");
 const asyncHandler = require("express-async-handler");
 exports.createBrand = asyncHandler(async (req, res) => {
@@ -12,7 +12,6 @@ exports.createBrand = asyncHandler(async (req, res) => {
   res.status(201).json(savedBrand); // نرسل البيانات التي تم حفظها فعلياً
 });
 
-
 exports.getBrands = asyncHandler(async (req, res) => {
   const page = req.query.page * 1 || 1;
   const limit = req.query.limit * 1 || 20;
@@ -21,9 +20,9 @@ exports.getBrands = asyncHandler(async (req, res) => {
   res.status(200).json({ results: brands.length, page, data: brands });
 });
 
-exports.getBrand = asyncHandler(async (req, res , next) => {
-  const { id} = req.params;
-  console.log(id)
+exports.getBrand = asyncHandler(async (req, res, next) => {
+  const { id } = req.params;
+  console.log(id);
   const brand = await BrandModel.findById(id);
   if (!brand) {
     return next(new ApiError(`brand with ID ${id} not found`, 404));

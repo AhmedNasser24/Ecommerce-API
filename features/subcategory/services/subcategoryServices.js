@@ -1,5 +1,5 @@
 const SubCategoryModel = require("../models/subcategoryModel");
-const ApiError = require("../utils/ApiError");
+const ApiError = require("../../../utils/ApiError");
 const slugify = require("slugify");
 const asyncHandler = require("express-async-handler");
 
@@ -20,7 +20,7 @@ exports.getSubcategories = asyncHandler(async (req, res, next) => {
     query = query.populate({ path: "category", select: "name" });
   }
 
-  const subcategories =  await query;
+  const subcategories = await query;
 
   res.status(200).json({
     results: subcategories.length,
@@ -79,7 +79,6 @@ exports.deleteSubcategory = asyncHandler(async (req, res, next) => {
   }
   res.status(204).send();
 });
-
 
 exports.setCategoryIdToBody = asyncHandler(async (req, res, next) => {
   if (!req.body.category) req.body.category = req.params.categoryId;

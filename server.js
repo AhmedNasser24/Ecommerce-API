@@ -2,9 +2,9 @@ const express = require("express");
 require("dotenv").config();
 const morgan = require("morgan");
 
-const categoryRoutes = require("./routes/categoryRoute");
-const subcategoryRoutes = require("./routes/subcategoryRoute");
-const brandRoutes = require("./routes/brandRoute");
+const categoryRoutes = require("./features/category/routes/categoryRoute");
+const subcategoryRoutes = require("./features/subcategory/routes/subcategoryRoute");
+const brandRoutes = require("./features/brand/routes/brandRoute");
 const dbConnection = require("./config/database");
 const ApiError = require("./utils/ApiError");
 const { errorHandler } = require("./middlewares/errorMiddleWare");

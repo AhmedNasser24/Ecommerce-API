@@ -1,5 +1,5 @@
 const CategoryModel = require("../models/categoryModel");
-const ApiError = require("../utils/ApiError");
+const ApiError = require("../../../utils/ApiError");
 const slugify = require("slugify");
 const asyncHandler = require("express-async-handler");
 exports.createCategory = asyncHandler(async (req, res) => {

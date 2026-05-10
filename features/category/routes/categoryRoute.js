@@ -15,10 +15,9 @@ const {
   updateCategory,
   deleteCategory,
 } = require("../services/categoryServices");
-const subcategoryRoute = require("./subcategoryRoute");
+const subcategoryRoute = require("../../subcategory/routes/subcategoryRoute");
 
-
-router.use("/:categoryId/subcategories" , subcategoryRoute);
+router.use("/:categoryId/subcategories", subcategoryRoute);
 
 // @route   GET /categories
 // @desc    Get all categories
