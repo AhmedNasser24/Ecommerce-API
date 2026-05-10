@@ -29,6 +29,11 @@ const ProductSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "Brand",
   },
+  quantity : {
+    type : Number,
+    required : [true, "Product quantity is required"],
+    min : [1, "Product quantity must be at least 1"],
+  },
   price: {
     type: Number,
     required: [true, "Product price is required"],
