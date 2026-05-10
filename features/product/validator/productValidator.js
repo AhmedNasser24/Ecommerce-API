@@ -6,7 +6,7 @@ const SubCategoryModel = require("../../subcategory/models/subcategoryModel");
 const CategoryModel = require("../../category/models/categoryModel");
 const BrandModel = require("../../brand/models/brandModel");
 
-exports.createProductValidator = [
+const createProductValidator = [
   check("title")
     .notEmpty()
     .withMessage("Product title is required")
@@ -55,10 +55,11 @@ exports.createProductValidator = [
     .notEmpty()
     .withMessage("Product category is required")
     .isMongoId()
-    .withMessage("Invalid product category ID").custom ((categoryId) =>{
-      const category =  CategoryModel.findById(categoryId);
-      if(!category){
-        throw new Error("Category  not found");
+    .withMessage("Invalid product category ID")
+    .custom(async (categoryId) => {
+      const category = await CategoryModel.findById(categoryId);
+      if (!category) {
+        throw new Error("Category not found");
       }
       return true;
     }),
@@ -91,7 +92,25 @@ exports.createProductValidator = [
   validatorMiddleware,
 ];
 
-exports.getProductValidator = [
+const getProductValidator = [
   check("id").isMongoId().withMessage("Invalid product ID"),
   validatorMiddleware,
 ];
+
+const updateProductValidator = [
+  check("id").isMongoId().withMessage("Invalid product ID"),
+  ...createProductValidator,
+  validatorMiddleware,
+];
+
+const deleteProductValidator = [
+  check("id").isMongoId().withMessage("Invalid product ID"),
+  validatorMiddleware,
+];
+
+module.exports = {
+  createProductValidator,
+  getProductValidator,
+  updateProductValidator,
+  deleteProductValidator,
+};
