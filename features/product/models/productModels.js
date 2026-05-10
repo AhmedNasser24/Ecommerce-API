@@ -12,15 +12,14 @@ const ProductSchema = new mongoose.Schema({
     type: String,
     unique: [true, "Product slug must be unique"],
     required: [true, "Product slug is required"],
-    minlength: [2, "Product slug must be at least 2 characters"],
-    maxlength: [32, "Product slug must be at most 32 characters"],
+    lowercase: true,
   },
   category: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Category",
     required: [true, "Product must belong to a category"],
   },
-  subCategory: {
+  subcategory: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "SubCategory",
     required: [true, "Product must belong to a subcategory"],

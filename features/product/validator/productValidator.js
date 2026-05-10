@@ -2,9 +2,9 @@ const { check } = require("express-validator");
 const {
   validatorMiddleware,
 } = require("../../../middlewares/validatorMiddleware");
-const SubCategoryModel = require("features/subcategory/models/subcategoryModel");
-const CategoryModel = require("features/category/models/categoryModel");
-const BrandModel = require("features/brand/models/brandModel");
+const SubCategoryModel = require("../../subcategory/models/subcategoryModel");
+const CategoryModel = require("../../category/models/categoryModel");
+const BrandModel = require("../../brand/models/brandModel");
 
 exports.createProductValidator = [
   check("title")
@@ -77,8 +77,7 @@ exports.createProductValidator = [
       return true;
     }),
   check("brand")
-    .notEmpty()
-    .withMessage("Product brand is required")
+    .optional()
     .isMongoId()
     .withMessage("Invalid product brand ID")
     .custom((brandId) => {
