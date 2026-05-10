@@ -1,5 +1,5 @@
 const express = require("express");
-const router = express.Router();
+const router = express.Router({});
 const {
   createSubcategory,
   getSubcategory,
@@ -13,9 +13,8 @@ const {
   updateSubcategoryValidator,
   deleteSubcategoryValidator,
   createSubcategoryValidator,
-} = require("../validators/subcategoryValidator");
+} = require("../validator/subcategoryValidator");
 
-router.mergeParams = true;
 
 router.post(
   "/",
