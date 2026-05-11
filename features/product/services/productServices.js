@@ -13,16 +13,15 @@ const getAllProducts = asyncHandler(async (req, res) => {
   const queryObj = { ...req.query };
   const excludedFields = ["page", "limit", "sort", "fields"];
   excludedFields.forEach((field) => delete queryObj[field]);
-
+  console.log(queryObj);
   // Apply filtration using [gte, gt, lte, lt]
   let queryStr = JSON.stringify(queryObj);
-  console.log(queryStr);
   queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
-  console.log(queryStr);
 
   // 2) Sorting
   let sortBy;
   if (req.query.sort) {
+    
     // @ts-ignore
     sortBy = req.query.sort.split(",").join(" ");
   } else {
@@ -30,17 +29,22 @@ const getAllProducts = asyncHandler(async (req, res) => {
   }
 
   // build mongoose query
-  const mongooseQuery = ProductModel.find(JSON.parse(queryStr))
+  let mongooseQuery = ProductModel.find(JSON.parse(queryStr))
     .skip(skip)
-    .sort(sortBy)
     .limit(limit)
+    .sort(sortBy)
     .populate("category")
     .populate("subcategory");
 
   //get all products
   const products = await mongooseQuery;
 
-  res.status(200).json(products);
+  res.status(200).json({
+    results:products.length,
+    page,
+    data : products,
+    
+  });
 });
 
 const createProduct = asyncHandler(async (req, res, next) => {

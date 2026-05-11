@@ -21,7 +21,7 @@ module.exports = [
       "no-unused-vars": ["warn", { argsIgnorePattern: "^next$" }],
       "no-console": "off",
       "no-undef": "error",
-
+     
       // 👇 قوانين التحقق من المسارات (هذه ما تحتاجه بالضبط)
       "import/no-unresolved": "error", // يضع خطاً أحمر لو المسار خطأ
       "import/named": "error", // يتأكد أنك تستدعي شيئاً موجوداً فعلياً داخل الملف

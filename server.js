@@ -13,6 +13,7 @@ const app = express();
 
 dbConnection();
 // Middleware
+app.set("query parser", "extended");  // allows to use gte, gt, lte, lt in query strings
 app.use(express.json()); // parse request body into JSON
 
 if (process.env.NODE_ENV === "development") {
