@@ -2,29 +2,32 @@ const SubCategoryModel = require("../models/subcategoryModel");
 const ApiError = require("../../../utils/ApiError");
 const slugify = require("slugify");
 const asyncHandler = require("express-async-handler");
+const ApiFeatures = require("../../../utils/apiFeatures");
 
 // @desc    Get all subcategories
 // @route   GET /api/subcategories
 // @access  Public
 exports.getSubcategories = asyncHandler(async (req, res, next) => {
-  const page = Number(req.query.page) || 1;
-  const limit = Number(req.query.limit) || 20;
-  const skip = (page - 1) * limit;
   let filter = {};
   if (req.params.categoryId) {
     filter = { category: req.params.categoryId };
   }
-  let query = SubCategoryModel.find(filter).skip(skip).limit(limit);
 
-  if (req.query.populate) {
-    query = query.populate({ path: "category", select: "name" });
-  }
+  const countDocuments = await SubCategoryModel.countDocuments(filter);
+  const apiFeatures = new ApiFeatures(SubCategoryModel.find(filter), req.query)
+    .paginate(countDocuments)
+    .filter()
+    .search()
+    .sort()
+    .limitFields()
+    .populate();
 
-  const subcategories = await query;
+  const { mongooseQuery, paginationResult } = apiFeatures;
+  const subcategories = await mongooseQuery;
 
   res.status(200).json({
     results: subcategories.length,
-    page,
+    paginationResult,
     data: subcategories,
   });
 });
