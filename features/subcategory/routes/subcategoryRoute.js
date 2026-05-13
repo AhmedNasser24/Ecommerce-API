@@ -7,6 +7,7 @@ const {
   updateSubcategory,
   deleteSubcategory,
   setCategoryIdToBody,
+  createFilterObj,
 } = require("../services/subcategoryServices");
 const {
   getSubcategoryValidator,
@@ -22,7 +23,7 @@ router.post(
   createSubcategoryValidator,
   createSubcategory,
 );
-router.get("/", getSubcategories);
+router.get("/", createFilterObj, getSubcategories);
 router.get("/:id", getSubcategoryValidator, getSubcategory);
 router.put(
   "/:id",

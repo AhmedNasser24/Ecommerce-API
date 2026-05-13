@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const slugify = require("slugify");
 
 const ProductSchema = new mongoose.Schema({
   title: {
@@ -42,6 +43,15 @@ const ProductSchema = new mongoose.Schema({
     type: Number,
     min: [0, "Product price must be at least 0"],
   }
+});
+
+ProductSchema.pre("save", function (next) {
+  this.slug = slugify(this.title);
+  if (!this.priceAfterDiscount) {
+    this.priceAfterDiscount = this.price;
+  }
+  // @ts-ignore
+  next();
 });
 
 const ProductModel = mongoose.model("Product", ProductSchema);

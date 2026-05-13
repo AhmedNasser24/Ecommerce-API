@@ -1,102 +1,52 @@
 const SubCategoryModel = require("../models/subcategoryModel");
 const ProductModel = require("../../product/models/productModels");
 const ApiError = require("../../../utils/ApiError");
-const slugify = require("slugify");
-const asyncHandler = require("express-async-handler");
-const ApiFeatures = require("../../../utils/apiFeatures");
+const factory = require("../../../utils/handlersFactory");
+
+// Middleware to set category ID to body for nested creation
+exports.setCategoryIdToBody = (req, res, next) => {
+  if (!req.body.category) req.body.category = req.params.categoryId;
+  next();
+};
+
+// Middleware to create filter object for nested routes
+exports.createFilterObj = (req, res, next) => {
+  let filter = {};
+  if (req.params.categoryId) filter = { category: req.params.categoryId };
+  req.filterObj = filter;
+  next();
+};
+
+// @desc    Create subcategory
+// @route   POST /api/subcategories
+// @access  Private
+exports.createSubcategory = factory.createOne(SubCategoryModel);
 
 // @desc    Get all subcategories
 // @route   GET /api/subcategories
 // @access  Public
-exports.getSubcategories = asyncHandler(async (req, res, next) => {
-  let filter = {};
-  if (req.params.categoryId) {
-    filter = { category: req.params.categoryId };
-  }
+exports.getSubcategories = factory.getAll(SubCategoryModel);
 
-  const countDocuments = await SubCategoryModel.countDocuments(filter);
-  const apiFeatures = new ApiFeatures(SubCategoryModel.find(filter), req.query)
-    .paginate(countDocuments)
-    .filter()
-    .search()
-    .sort()
-    .limitFields()
-    .populate();
+// @desc    Get specific subcategory by ID
+// @route   GET /api/subcategories/:id
+// @access  Public
+exports.getSubcategory = factory.getOne(SubCategoryModel);
 
-  const { mongooseQuery, paginationResult } = apiFeatures;
-  const subcategories = await mongooseQuery;
+// @desc    Update subcategory by ID
+// @route   PUT /api/subcategories/:id
+// @access  Private
+exports.updateSubcategory = factory.updateOne(SubCategoryModel);
 
-  res.status(200).json({
-    results: subcategories.length,
-    paginationResult,
-    data: subcategories,
-  });
-});
-
-exports.getSubcategory = asyncHandler(async (req, res, next) => {
-  const { id } = req.params;
-  const populate = req.query.populate;
-  let query = SubCategoryModel.findById(id);
-  if (populate) {
-    console.log(populate);
-    query = query.populate({ path: "category", select: "name" });
-  }
-  const subcategory = await query;
-  if (!subcategory) {
-    return next(new ApiError("SubCategory not found", 404));
-  }
-  res.status(200).json(subcategory);
-});
-
-exports.createSubcategory = asyncHandler(async (req, res, next) => {
-  const { name, category } = req.body;
-  const subcategory = await SubCategoryModel.create({
-    name,
-    slug: slugify(name),
-    category,
-  });
-  if (!subcategory) {
-    return next(new ApiError("Failed to create subcategory", 404));
-  }
-  res.status(201).json(subcategory);
-});
-
-exports.updateSubcategory = asyncHandler(async (req, res, next) => {
-  const { id } = req.params;
-  const { name, category } = req.body;
-  const subcategory = await SubCategoryModel.findByIdAndUpdate(
-    id,
-    { name, slug: slugify(name), category },
-    { new: true },
-  );
-  if (!subcategory) {
-    return next(new ApiError("SubCategory not found", 404));
-  }
-  res.status(200).json(subcategory);
-});
-
-exports.deleteSubcategory = asyncHandler(async (req, res, next) => {
-  const { id } = req.params;
-
-  // 1) Check if subcategory has products
+// @desc    Delete subcategory by ID
+// @route   DELETE /api/subcategories/:id
+// @access  Private
+exports.deleteSubcategory = factory.deleteOne(SubCategoryModel, async (id) => {
   const products = await ProductModel.countDocuments({ subcategory: id });
   if (products > 0) {
-    return next(
-      new ApiError(
-        `Cannot delete subcategory that contains ${products} products. Delete them first.`,
-        400,
-      ),
+    return new ApiError(
+      `Cannot delete subcategory that contains ${products} products. Delete them first.`,
+      400
     );
   }
-
-  const subcategory = await SubCategoryModel.findByIdAndDelete(id);
-  if (!subcategory) {
-    return next(new ApiError("SubCategory not found", 404));
-  }
-  res.status(204).send();
-});
-
-exports.setCategoryIdToBody = asyncHandler(async (req, res, next) => {
-  if (!req.body.category) req.body.category = req.params.categoryId;
-  next();
+  return null;
 });
