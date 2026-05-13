@@ -1,4 +1,6 @@
 const CategoryModel = require("../models/categoryModel");
+const SubCategoryModel = require("../../subcategory/models/subcategoryModel");
+const ProductModel = require("../../product/models/productModels");
 const ApiError = require("../../../utils/ApiError");
 const slugify = require("slugify");
 const asyncHandler = require("express-async-handler");
@@ -66,6 +68,29 @@ exports.updateCategory = asyncHandler(async (req, res, next) => {
 // @access  Private
 exports.deleteCategory = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
+
+  // 1) Check if category has subcategories
+  const subcategories = await SubCategoryModel.countDocuments({ category: id });
+  if (subcategories > 0) {
+    return next(
+      new ApiError(
+        `Cannot delete category that contains ${subcategories} subcategories. Delete them first.`,
+        400,
+      ),
+    );
+  }
+
+  // 2) Check if category has products
+  const products = await ProductModel.countDocuments({ category: id });
+  if (products > 0) {
+    return next(
+      new ApiError(
+        `Cannot delete category that contains ${products} products. Delete them first.`,
+        400,
+      ),
+    );
+  }
+
   const category = await CategoryModel.findByIdAndDelete(id);
   if (!category) {
     return next(new ApiError(`Category with ID ${id} not found`, 404));

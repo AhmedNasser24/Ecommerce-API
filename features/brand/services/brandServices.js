@@ -1,4 +1,5 @@
 const BrandModel = require("../models/brandModel");
+const ProductModel = require("../../product/models/productModels");
 const ApiError = require("../../../utils/ApiError");
 const slugify = require("slugify");
 const asyncHandler = require("express-async-handler");
@@ -65,6 +66,18 @@ exports.updateBrand = asyncHandler(async (req, res, next) => {
 // @access  Private
 exports.deleteBrand = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
+
+  // 1) Check if brand has products
+  const products = await ProductModel.countDocuments({ brand: id });
+  if (products > 0) {
+    return next(
+      new ApiError(
+        `Cannot delete brand that contains ${products} products. Delete them first.`,
+        400,
+      ),
+    );
+  }
+
   const brand = await BrandModel.findByIdAndDelete(id);
   if (!brand) {
     return next(new ApiError(`brand with ID ${id} not found`, 404));
