@@ -5,6 +5,7 @@ const {
 const SubCategoryModel = require("../../subcategory/models/subcategoryModel");
 const CategoryModel = require("../../category/models/categoryModel");
 const BrandModel = require("../../brand/models/brandModel");
+const slugify = require("slugify");
 
 const createProductValidator = [
   check("title")
@@ -13,15 +14,20 @@ const createProductValidator = [
     .isLength({ min: 3 })
     .withMessage("Product title must be at least 3 characters")
     .isLength({ max: 32 })
-    .withMessage("Product title must be at most 32 characters"),
+    .withMessage("Product title must be at most 32 characters").custom((title) => slugify(title)),
   check("price")
     .notEmpty()
     .withMessage("Product price is required")
     .isNumeric()
     .withMessage("Product price must be a number")
-    .custom((price) => {
-      if (price < 0) {
-        throw new Error("Product price can't be negative");
+    .custom((price, { req }) => {
+      if (price <= 0) {
+        throw new Error("Product price can't be negative or zero");
+      }
+      if (!req.body.priceAfterDiscount) {
+        req.body.priceAfterDiscount = price;
+      }else if (req.body.priceAfterDiscount > price) {
+        throw new Error("Product priceAfterDiscount must be less than product price");
       }
       return true;
     }),
@@ -29,17 +35,13 @@ const createProductValidator = [
     .optional()
     .isNumeric()
     .withMessage("Product priceAfterDiscount must be a number")
-    .custom((value, { req }) => {
-      if (!value) {
-        return true;
-      }
-      if (value >= req.body.price) {
-        throw new Error(
-          "Product priceAfterDiscount must be less than product price",
-        );
+    .custom((value) => {
+      if (value <= 0) {
+        throw new Error("Product priceAfterDiscount can't be negative or zero");
       }
       return true;
     }),
+    
   check("quantity")
     .notEmpty()
     .withMessage("Product quantity is required")

@@ -3,6 +3,28 @@ const SubCategoryModel = require("../../subcategory/models/subcategoryModel");
 const ProductModel = require("../../product/models/productModels");
 const ApiError = require("../../../utils/ApiError");
 const factory = require("../../../utils/handlersFactory");
+const sharp = require("sharp");
+const { uploadSingleImage } = require("../../../middlewares/uploadImageMiddleware");
+const asyncHandler = require("express-async-handler");
+exports.uploadCategoryImage = uploadSingleImage("image");
+
+exports.resizeCategoryImage = asyncHandler(async (req, res, next) => {
+  if (!req.file) {
+    return next();
+  }
+  const filename = `category-${Date.now()}.jpeg`;
+
+  await sharp(req.file.buffer)
+    .resize(800, 800)
+    .toFormat("jpeg")
+    .jpeg({ quality: 95 })
+    .toFile(`uploads/categories/${filename}`);
+
+  // Attach the filename to the request
+  req.body.image = filename;
+
+  next();
+});
 
 // @desc    Create category
 // @route   POST /api/categories

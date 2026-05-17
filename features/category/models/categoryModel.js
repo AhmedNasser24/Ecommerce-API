@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const slugify = require("slugify");
 
 const CategorySchema = new mongoose.Schema(
   {
@@ -14,15 +13,15 @@ const CategorySchema = new mongoose.Schema(
       type: String,
       lowercase: true,
     },
+    image: {
+      type: String,
+      required: [true, "Category image is required"],
+    },
   },
   { timestamps: true }
 );
 
-CategorySchema.pre("save", function (next) {
-  this.slug = slugify(this.name);
-  // @ts-ignore
-  next();
-});
+
 
 const CategoryModel = mongoose.model("Category", CategorySchema);
 

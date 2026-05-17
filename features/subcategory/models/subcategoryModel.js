@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const slugify = require("slugify");
 
 const SubCategorySchema = new mongoose.Schema({
   name: {
@@ -20,12 +19,6 @@ const SubCategorySchema = new mongoose.Schema({
     ref: "Category",
     required: [true, "SubCategory must belong to a category"],
   },
-});
-
-SubCategorySchema.pre("save", function (next) {
-  this.slug = slugify(this.name);
-  // @ts-ignore
-  next();
 });
 
 const SubCategoryModel = mongoose.model("SubCategory", SubCategorySchema);

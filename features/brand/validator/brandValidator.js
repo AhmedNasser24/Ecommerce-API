@@ -2,6 +2,7 @@ const { check } = require("express-validator");
 const {
   validatorMiddleware,
 } = require("../../../middlewares/validatorMiddleware");
+const slugify = require("slugify");
 
 const createBrandValidator = [
   check("name")
@@ -10,7 +11,8 @@ const createBrandValidator = [
     .isLength({ min: 2 })
     .withMessage("Brand name must be at least 2 characters")
     .isLength({ max: 32 })
-    .withMessage("Brand name must be at most 32 characters"),
+    .withMessage("Brand name must be at most 32 characters")
+    .custom((name) => slugify(name)),
   check("image").optional(),
 
   validatorMiddleware,
