@@ -14,6 +14,7 @@ const BrandSchema = new mongoose.Schema(
       type: String,
       lowercase: true,
     },
+    image: String,
   },
   { timestamps: true }
 );

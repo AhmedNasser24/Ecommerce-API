@@ -11,6 +11,7 @@ const createBrandValidator = [
     .withMessage("Brand name must be at least 2 characters")
     .isLength({ max: 32 })
     .withMessage("Brand name must be at most 32 characters"),
+  check("image").optional(),
 
   validatorMiddleware,
 ];

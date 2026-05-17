@@ -1,3 +1,4 @@
+const path = require("path");
 const express = require("express");
 require("dotenv").config();
 const morgan = require("morgan");
@@ -15,6 +16,7 @@ dbConnection();
 // Middleware
 app.set("query parser", "extended");  // allows to use gte, gt, lte, lt in query strings
 app.use(express.json()); // parse request body into JSON
+app.use(express.static(path.join(__dirname, "uploads"))); // serve static files like images
 
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev")); // logging requests
