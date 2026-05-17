@@ -5,6 +5,7 @@ const ApiError = require("../../../utils/ApiError");
 const factory = require("../../../utils/handlersFactory");
 const sharp = require("sharp");
 const { uploadSingleImage } = require("../../../middlewares/uploadImageMiddleware");
+
 const asyncHandler = require("express-async-handler");
 exports.uploadCategoryImage = uploadSingleImage("image");
 

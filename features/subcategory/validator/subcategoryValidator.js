@@ -15,7 +15,10 @@ const createSubcategoryValidator = [
     .withMessage("SubCategory name is required")
     .isLength({ min: 2, max: 32 })
     .withMessage("SubCategory name must be between 2 and 32 characters")
-    .custom((name) => slugify(name)),
+    .custom((name, { req }) => {
+      req.body.slug = slugify(name);
+      return true;
+    }),
   check("category")
     .notEmpty()
     .withMessage("SubCategory must belong to a category")
@@ -35,7 +38,8 @@ const updateSubcategoryValidator = [
     .notEmpty()
     .withMessage("category ID is empty")
     .isMongoId()
-    .withMessage("Invalid category ID").optional(),
+    .withMessage("Invalid category ID")
+    .optional(),
   validatorMiddleware,
 ];
 

@@ -41,7 +41,16 @@ const ProductSchema = new mongoose.Schema({
   priceAfterDiscount : {
     type: Number,
     min: [0, "Product price must be at least 0"],
-  }
+  },
+  coverImage : {
+    type: String,
+    required: [true, "Product cover image is required"],
+  },
+  images : [
+    {
+      type: String,
+    },
+  ]
 });
 
 

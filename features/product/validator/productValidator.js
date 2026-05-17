@@ -14,7 +14,11 @@ const createProductValidator = [
     .isLength({ min: 3 })
     .withMessage("Product title must be at least 3 characters")
     .isLength({ max: 32 })
-    .withMessage("Product title must be at most 32 characters").custom((title) => slugify(title)),
+    .withMessage("Product title must be at most 32 characters")
+    .custom((title, { req }) => {
+      req.body.slug = slugify(title);
+      return true;
+    }),
   check("price")
     .notEmpty()
     .withMessage("Product price is required")
@@ -26,8 +30,10 @@ const createProductValidator = [
       }
       if (!req.body.priceAfterDiscount) {
         req.body.priceAfterDiscount = price;
-      }else if (req.body.priceAfterDiscount > price) {
-        throw new Error("Product priceAfterDiscount must be less than product price");
+      } else if (req.body.priceAfterDiscount > price) {
+        throw new Error(
+          "Product priceAfterDiscount must be less than product price",
+        );
       }
       return true;
     }),
@@ -41,7 +47,7 @@ const createProductValidator = [
       }
       return true;
     }),
-    
+
   check("quantity")
     .notEmpty()
     .withMessage("Product quantity is required")
@@ -90,7 +96,11 @@ const createProductValidator = [
       }
       return true;
     }),
-
+  check("coverImage").notEmpty().withMessage("Product cover image is required"),
+  check("images")
+    .optional()
+    .isArray()
+    .withMessage("Product images must be an array"),
   validatorMiddleware,
 ];
 

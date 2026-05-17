@@ -12,7 +12,7 @@ const createCategoryValidator = [
     .withMessage("Category name must be at least 3 characters")
     .isLength({ max: 32 })
     .withMessage("Category name must be at most 32 characters")
-    .custom((name) => slugify(name)),
+    .custom((name , {req}) => {req.body.slug = slugify(name); return true;}),
   check("image").notEmpty().withMessage("Category image is required"),
   validatorMiddleware,
 ];
