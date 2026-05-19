@@ -89,8 +89,8 @@ const createProductValidator = [
     .optional()
     .isMongoId()
     .withMessage("Invalid product brand ID")
-    .custom((brandId) => {
-      const brand = BrandModel.findById(brandId);
+    .custom(async (brandId) => {
+      const brand = await BrandModel.findById(brandId);
       if (!brand) {
         throw new Error("Brand  not found");
       }

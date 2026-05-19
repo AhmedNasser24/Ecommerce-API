@@ -1,12 +1,24 @@
+
 const express = require("express");
 const router = express.Router();
-const userServices = require("../services/userServices");
+const {
+  createUserValidator,
+  deleteUserValidator,
+  updateUserValidator,
+} = require("../validator/userValidator");
+const {
+  getAllUsers,
+  createUser,
+  getUser,
+  updateUser,
+  deleteUser,
+} = require("../services/userServices");
 
-router.route("/").get(userServices.getAllUsers).post(userServices.createUser);
+router.route("/").get(getAllUsers).post(createUserValidator,createUser);
 router
   .route("/:id")
-  .get(userServices.getUser)
-  .put(userServices.updateUser)
-  .delete(userServices.deleteUser);
+  .get(getUser)
+  .put(updateUserValidator,updateUser)
+  .delete(deleteUserValidator,deleteUser);
 
 module.exports = router;
