@@ -15,7 +15,8 @@ const app = express();
 // security
 const { rateLimiterMiddlewareSecurity } = require("./security/rateLimiter");
 const { hppMiddlewareSecurity } = require("./security/hpp");
-
+const expressMongoSanitize = require("express-mongo-sanitize");
+const xss = require("xss-clean");
 
 dbConnection();
 // Middleware
@@ -23,6 +24,8 @@ app.set("query parser", "extended");  // allows to use gte, gt, lte, lt in query
 app.use(express.json({ limit: "10kb" })); 
 app.use(rateLimiterMiddlewareSecurity);
 app.use(hppMiddlewareSecurity);
+app.use(expressMongoSanitize());
+app.use(xss());
 
 // parse request body into JSON
 app.use(express.static(path.join(__dirname, "uploads"))); // serve static files like images
