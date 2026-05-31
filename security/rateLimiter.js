@@ -13,7 +13,7 @@ const categoryRateLimiter = new RateLimiterMemory({
   duration: 3, 
 });
 
-exports.rateLimiterMiddleware = (req, res, next) => {
+exports.rateLimiterMiddlewareSecurity = (req, res, next) => {
   // فحص ما إذا كان المسار الحالي يبدأ بـ /api/v1/categories أو /categories حسب نظام التسمية عندك
   const isCategoryRoute = req.originalUrl.startsWith("/api/v1/categories") || req.originalUrl.startsWith("/categories");
 
