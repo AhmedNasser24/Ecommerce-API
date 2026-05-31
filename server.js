@@ -1,5 +1,6 @@
 const path = require("path");
 const express = require("express");
+const { RateLimiterMemory } = require('rate-limiter-flexible');
 require("dotenv").config();
 const morgan = require("morgan");
 
@@ -12,15 +13,18 @@ const userRoutes = require("./features/user/routes/userRoutes");
 const ApiError = require("./utils/ApiError");
 const { errorHandler } = require("./middlewares/errorMiddleWare");
 const app = express();
+// security
+const { limitBodySizeMiddleware } = require("./security/limitBodySize");
+const { rateLimiterMiddleware } = require("./security/rateLimiter");
+
 
 dbConnection();
 // Middleware
 app.set("query parser", "extended");  // allows to use gte, gt, lte, lt in query strings
-app.use(express.json(
-  {
-    limit: "10kb", // max body size
-  }
-)); // parse request body into JSON
+app.use(limitBodySizeMiddleware); 
+app.use(rateLimiterMiddleware);
+
+// parse request body into JSON
 app.use(express.static(path.join(__dirname, "uploads"))); // serve static files like images
 
 if (process.env.NODE_ENV === "development") {
