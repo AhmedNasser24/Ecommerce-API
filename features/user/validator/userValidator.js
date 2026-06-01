@@ -14,10 +14,6 @@ exports.createUserValidator = [
     .isLength({ max: 32 })
     .withMessage("Name must be at most 32 characters long")
     .custom((name, { req }) => {
-      const nameRegex = /^[a-zA-Z ]+$/;
-      if (!nameRegex.test(name)) {
-        throw new Error("Name must contain only letters and spaces");
-      }
       req.body.slug = slugify(name);
       return true;
     }),
@@ -37,7 +33,16 @@ exports.createUserValidator = [
     .notEmpty()
     .withMessage("Password is required")
     .isLength({ min: 6 })
-    .withMessage("Password must be at least 6 characters long"),
+    .withMessage("Password must be at least 6 characters long")
+    .custom(async (password, { req }) => {
+      if (req.body.confirmPassword !== password) {
+        throw new Error("Passwords do not match");
+      }
+      return true;
+    }),
+  check("confirmPassword")
+    .notEmpty()
+    .withMessage("Confirm password is required"),
   check("phone")
     .notEmpty()
     .withMessage("Phone is required")
@@ -102,3 +107,4 @@ exports.updateUserValidator = [
   check("address").optional(),
   validatorMiddleware,
 ];
+
