@@ -2,6 +2,7 @@ const factory = require("../../../utils/handlersFactory");
 const UserModel = require("../models/userModels");
 const asyncHandler = require("express-async-handler");
 const ApiError = require("../../../utils/ApiError");
+const bcrypt = require("bcrypt");
 // @desc Create User
 exports.createUser = factory.createOne(UserModel);
 
@@ -26,6 +27,25 @@ exports.updateUser = asyncHandler(async (req, res, next) => {
       isActive: req.body.isActive,
       image: req.body.image,
       address: req.body.address,
+    },
+    {
+      new: true,
+      runValidators: true,
+    },
+  );
+  if (!document) {
+    return next(
+      new ApiError(`No document found with ID ${req.params.id}`, 404),
+    );
+  }
+  res.status(200).json({ data: document });
+});
+
+exports.changePassword = asyncHandler(async (req, res, next) => {
+  const document = await UserModel.findByIdAndUpdate(
+    req.params.id,
+    {
+      password: await bcrypt.hash(req.body.newPassword, 10),
     },
     {
       new: true,
