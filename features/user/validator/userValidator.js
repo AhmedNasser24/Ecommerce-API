@@ -83,10 +83,7 @@ exports.updateUserValidator = [
     .isLength({ max: 32 })
     .withMessage("Name must be at most 32 characters long")
     .custom((name, { req }) => {
-      const nameRegex = /^[a-zA-Z ]+$/;
-      if (!nameRegex.test(name)) {
-        throw new Error("Name must contain only letters and spaces");
-      }
+      
       req.body.slug = slugify(name);
       return true;
     }),

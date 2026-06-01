@@ -23,13 +23,19 @@ exports.deleteOne = (Model, checkRefs) =>
 
 exports.updateOne = (Model) =>
   asyncHandler(async (req, res, next) => {
-    const document = await Model.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true,
-    });
+    const document = await Model.findByIdAndUpdate(
+      req.params.id,
+       req.body,
+      {
+        new: true,
+        runValidators: true,
+      },
+    );
 
     if (!document) {
-      return next(new ApiError(`No document found with ID ${req.params.id}`, 404));
+      return next(
+        new ApiError(`No document found with ID ${req.params.id}`, 404),
+      );
     }
     res.status(200).json({ data: document });
   });

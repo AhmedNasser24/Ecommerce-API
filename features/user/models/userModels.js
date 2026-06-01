@@ -9,6 +9,10 @@ const userSchema = new mongoose.Schema(
       minlength: 3,
       maxlength: 32,
     },
+    slug: {
+      type: String,
+      trim: true,
+    },
     email: {
       type: String,
       required: true,
@@ -39,6 +43,10 @@ const userSchema = new mongoose.Schema(
     address: {
       type: String,
       trim: true,
+    },
+    isActive: {
+      type: Boolean,
+      default: true,
     },
   },
   {
