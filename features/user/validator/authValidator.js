@@ -4,6 +4,7 @@ const {
 } = require("../../../middlewares/validatorMiddleware");
 const slugify = require("slugify");
 const UserModel = require("../models/userModels");
+const bcrypt = require("bcrypt");
 
 exports.signupValidator = [
   check("name")
@@ -43,6 +44,32 @@ exports.signupValidator = [
   check("confirmPassword")
     .notEmpty()
     .withMessage("Confirm password is required"),
-  
+
+  validatorMiddleware,
+];
+
+exports.loginValidator = [
+  check("email")
+    .notEmpty()
+    .withMessage("Email is required")
+    .isEmail()
+    .withMessage("Invalid email address")
+    .custom(async (email, { req }) => {
+      console.log("----------------", req.body);
+      const existingUser = await UserModel.findOne({ email });
+
+      if (!existingUser) {
+        throw new Error("Invalid email or password");
+      }
+      const isMatched = await bcrypt.compare(
+        req.body.password,
+        existingUser.password,
+      );
+      if (!isMatched) {
+        throw new Error("Invalid email or password");
+      }
+      return true;
+    }),
+  check("password").notEmpty().withMessage("Password is required"),
   validatorMiddleware,
 ];
