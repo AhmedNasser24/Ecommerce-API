@@ -15,7 +15,9 @@ const {
   deleteUser,
   changePassword,
 } = require("../services/userServices");
-
+const authService = require("../services/authServices");
+router.use(authService.protect);
+router.use(authService.allowTo("admin"));
 router.route("/").get(getAllUsers).post(createUserValidator,createUser);
 router
   .route("/:id")

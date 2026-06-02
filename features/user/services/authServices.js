@@ -33,36 +33,36 @@ exports.signup = asyncHandler(async (req, res) => {
     password: req.body.password,
   });
   // sign token
-  const token = generateToken(user._id);
-  res.status(201).json({ _id: user._id, role: user.role, token });
+  const accessToken = generateToken(user._id);
+  res.status(201).json({ _id: user._id, role: user.role, accessToken });
 });
 
 exports.login = asyncHandler(async (req, res) => {
   const user = await UserModel.findOne({ email: req.body.email });
   // @ts-ignore
-  const token = generateToken(user._id);
+  const accessToken = generateToken(user._id);
   res.status(200).json({
     ...sanatizeUser(user),
-    token,
+    accessToken,
   });
 });
 
 // @ts-ignore
 exports.protect = asyncHandler(async (req, res, next) => {
   // 1) check if token exists in the request headers
-  let token;
+  let accessToken;
   if (
     req.headers.authorization &&
     req.headers.authorization.startsWith("Bearer")
   ) {
-    token = req.headers.authorization.split(" ")[1];
+    accessToken = req.headers.authorization.split(" ")[1];
   }
-  if (!token) {
+  if (!accessToken) {
     return next(new ApiError("You are not logged in", 401));
   }
   // 2) verify token and is not expired
   
-  const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+  const decodedToken = jwt.verify(accessToken, process.env.JWT_SECRET);
   console.log(decodedToken);
 
   // 3) verify user is exist
@@ -88,7 +88,17 @@ exports.protect = asyncHandler(async (req, res, next) => {
       return next(new ApiError('User recently changed password! Please login again.', 401));
     }
   }
-
+  
+  // @ts-ignore
+  req.user = currentUser;
   next();
   
+});
+
+exports.allowTo = (...roles) => asyncHandler(async (req, res, next) => {
+  // @ts-ignore
+  if (!roles.includes(req.user.role)) {
+    return next(new ApiError("You are not authorized to perform this action", 403));
+  }
+  next();
 });

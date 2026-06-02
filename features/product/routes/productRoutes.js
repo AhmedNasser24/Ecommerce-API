@@ -15,11 +15,11 @@ const {
   updateProductValidator,
   deleteProductValidator,
 } = require("../validator/productValidator");
-
+const authService = require("../../user/services/authServices");
 router.get("/", getAllProducts);
 router.get("/:id", getProductValidator, getProduct);
-router.post("/", uploadProductImages,resizeProductImages, createProductValidator, createProduct);
-router.put("/:id", uploadProductImages,resizeProductImages, updateProductValidator, updateProduct);
-router.delete("/:id", deleteProductValidator, deleteProduct);
+router.post("/", authService.protect, authService.allowTo("admin"),uploadProductImages,resizeProductImages, createProductValidator, createProduct);
+router.put("/:id", authService.protect, authService.allowTo("admin"),uploadProductImages,resizeProductImages, updateProductValidator, updateProduct);
+router.delete("/:id", authService.protect, authService.allowTo("admin"), deleteProductValidator, deleteProduct);
 
 module.exports = router;

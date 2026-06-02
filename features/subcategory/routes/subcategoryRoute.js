@@ -30,9 +30,17 @@ router.get("/:id", getSubcategoryValidator, getSubcategory);
 router.put(
   "/:id",
   setCategoryIdToBody,
+  AuthServices.protect,
+  AuthServices.allowTo("admin"),
   updateSubcategoryValidator,
   updateSubcategory,
 );
-router.delete("/:id", deleteSubcategoryValidator, deleteSubcategory);
+router.delete(
+  "/:id",
+  AuthServices.protect,
+  AuthServices.allowTo("admin"),
+  deleteSubcategoryValidator,
+  deleteSubcategory,
+);
 
 module.exports = router;
