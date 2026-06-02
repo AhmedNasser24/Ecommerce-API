@@ -5,7 +5,11 @@ const factory = require("../../../utils/handlersFactory");
 
 // Middleware to set category ID to body for nested creation
 exports.setCategoryIdToBody = (req, res, next) => {
-  if (!req.body.category) req.body.category = req.params.categoryId;
+  console.log("---params----", req.params);
+  // console.log("---body0----", req.body.category);
+  if (!req.params.categoryId) {
+    req.body.category = req.params.categoryId;
+  }
   next();
 };
 
@@ -45,7 +49,7 @@ exports.deleteSubcategory = factory.deleteOne(SubCategoryModel, async (id) => {
   if (products > 0) {
     return new ApiError(
       `Cannot delete subcategory that contains ${products} products. Delete them first.`,
-      400
+      400,
     );
   }
   return null;
