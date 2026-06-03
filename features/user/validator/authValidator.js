@@ -73,3 +73,35 @@ exports.loginValidator = [
   check("password").notEmpty().withMessage("Password is required"),
   validatorMiddleware,
 ];
+
+exports.forgetPasswordValidator = [
+  check("email")
+    .notEmpty()
+    .withMessage("Email is required")
+    .isEmail()
+    .withMessage("Invalid email address"),
+  validatorMiddleware,
+];
+
+// exports.verifyResetCodeValidator = [
+//   check("email")
+//     .notEmpty()
+//     .withMessage("Email is required")
+//     .isEmail()
+//     .withMessage("Invalid email address")
+//     .custom(async (email) => {
+//       const existingUser = await UserModel.findOne({ email });
+//       if (!existingUser) {
+//         throw new Error("User not found");
+//       }
+//       return true;
+//     }),
+//   check("resetCode")
+//     .notEmpty()
+//     .withMessage("Reset code is required")
+//     .isLength({ min: 6 })
+//     .withMessage("Reset code must be at least 6 characters long")
+//     .isLength({ max: 6 })
+//     .withMessage("Reset code must be at most 6 characters long"),
+//   validatorMiddleware,
+// ];
