@@ -6,6 +6,7 @@ const jwt = require("jsonwebtoken");
 const ApiError = require("../../../utils/ApiError");
 // @ts-ignore
 const bcrypt = require("bcrypt");
+const sendEmail = require("../../../utils/sendEmail");
 
 const generateToken = (id) => {
   // @ts-ignore
@@ -63,7 +64,7 @@ exports.protect = asyncHandler(async (req, res, next) => {
     return next(new ApiError("You are not logged in", 401));
   }
   // 2) verify token and is not expired
-  
+
   const decodedToken = jwt.verify(accessToken, process.env.JWT_SECRET);
 
   // 3) verify user is exist
@@ -77,50 +78,82 @@ exports.protect = asyncHandler(async (req, res, next) => {
   if (!currentUser.isActive) {
     return next(new ApiError("User is not active", 401));
   }
-  
+
   // 5) check if password was changed after the token was generated
   if (currentUser.passwordChangedAt) {
     // تحويل التاريخ لثوانٍ لمقارنته مع iat
     // @ts-ignore
-    const passwordChangedTimestamp = parseInt(currentUser.passwordChangedAt.getTime() / 1000, 10);
-    
+    const passwordChangedTimestamp = parseInt(
+      currentUser.passwordChangedAt.getTime() / 1000,
+      10,
+    );
+
     // @ts-ignore
     if (decodedToken.iat < passwordChangedTimestamp) {
-      return next(new ApiError('User recently changed password! Please login again.', 401));
+      return next(
+        new ApiError(
+          "User recently changed password! Please login again.",
+          401,
+        ),
+      );
     }
   }
-  
+
   // @ts-ignore
   req.user = currentUser;
   next();
-  
 });
 
-exports.allowTo = (...roles) => asyncHandler(async (req, res, next) => {
-  // @ts-ignore
-  if (!roles.includes(req.user.role)) {
-    return next(new ApiError("You are not authorized to perform this action", 403));
-  }
-  next();
-});
+exports.allowTo = (...roles) =>
+  asyncHandler(async (req, res, next) => {
+    // @ts-ignore
+    if (!roles.includes(req.user.role)) {
+      return next(
+        new ApiError("You are not authorized to perform this action", 403),
+      );
+    }
+    next();
+  });
 
 exports.forgetPassword = asyncHandler(async (req, res, next) => {
- // 1) check user exist 
- const user = await UserModel.findOne({ email: req.body.email });
- if (!user) {
-   return next(new ApiError("User not found", 404));
- }
- 
- // 2 ) create random reset code and save it in db
- const resetCode = Math.floor(100000 + Math.random() * 900000).toString();
- const hashedResetCode = crypto.createHash("sha256").update(resetCode).digest("hex");
- user.passwordResetCode = hashedResetCode;
- user.passwordResetExpires = new Date(Date.now() + 10 * 60 * 1000);
- user.passwordResetCodeVerified = false;
- console.log("resetCode : ", resetCode);
- console.log("expires in : ", user.passwordResetExpires);
- await user.save();
+  // 1) check user exist
+  const user = await UserModel.findOne({ email: req.body.email });
+  if (!user) {
+    return next(new ApiError("User not found", 404));
+  }
 
- // 3 ) send the code to the user's email
+  // 2 ) create random reset code and save it in db
+  const resetCode = Math.floor(100000 + Math.random() * 900000).toString();
+  const hashedResetCode = crypto
+    .createHash("sha256")
+    .update(resetCode)
+    .digest("hex");
+  user.passwordResetCode = hashedResetCode;
+  user.passwordResetExpires = new Date(Date.now() + 10 * 60 * 1000);
+  user.passwordResetCodeVerified = false;
+  console.log("resetCode : ", resetCode);
+  console.log("expires in : ", user.passwordResetExpires);
+  await user.save();
 
+  // 3 ) send the code to the user's email
+
+  try {
+    await sendEmail({
+      email: user.email,
+      subject: "Password Reset Code",
+      message: `Your password reset code is: ${resetCode}`,
+    });
+  } catch (error) {
+    console.log(error);
+    user.passwordResetCode = undefined;
+    user.passwordResetExpires = undefined;
+    user.passwordResetCodeVerified = undefined;
+    await user.save();
+    return next(new ApiError("Failed to send email", 500));
+  }
+
+  res.status(200).json({
+    status: "success",
+    message: "Password reset code sent to your email",
+  });
 });
