@@ -6,6 +6,7 @@ const {
   updateUserValidator,
   changePasswordValidator,
   getMyProfileValidator,
+  updateMyProfileValidator,
 } = require("../validator/userValidator");
 const {
   getAllUsers,
@@ -15,6 +16,7 @@ const {
   deleteUser,
   changePassword,
   getMyProfile,
+  updateMyProfile,
 } = require("../services/userServices");
 const authService = require("../services/authServices");
 router.use(authService.protect);
@@ -31,5 +33,8 @@ router
   .delete(authService.allowTo("admin"), deleteUserValidator, deleteUser);
 router.put("/changePassword/:id", changePasswordValidator, changePassword);
 
-router.get("/profile/:id", getMyProfileValidator, getMyProfile);
+router
+  .route("/profile/:id")
+  .get(getMyProfileValidator, getMyProfile)
+  .put(updateMyProfileValidator, updateMyProfile);
 module.exports = router;

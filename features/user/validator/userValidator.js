@@ -149,3 +149,30 @@ exports.getMyProfileValidator = [
   check("id").isMongoId().withMessage("Invalid user ID"),
   validatorMiddleware,
 ];
+
+exports.updateMyProfileValidator = [
+  check("id")
+    .notEmpty()
+    .withMessage("User ID is required")
+    .isMongoId()
+    .withMessage("Invalid user ID"),
+  check("name")
+    .optional()
+    .isLength({ min: 3 })
+    .withMessage("Name must be at least 3 characters long")
+    .isLength({ max: 32 })
+    .withMessage("Name must be at most 32 characters long")
+    .custom((name, { req }) => {
+      req.body.slug = slugify(name);
+      return true;
+    }),
+  check("phone")
+    .optional()
+    .isMobilePhone("ar-EG")
+    .withMessage("Invalid phone number")
+    ,
+  check("image").optional(),
+  check("address").optional(),
+  validatorMiddleware,
+];
+
