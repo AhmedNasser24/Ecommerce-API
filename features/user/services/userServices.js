@@ -3,6 +3,7 @@ const UserModel = require("../models/userModels");
 const asyncHandler = require("express-async-handler");
 const ApiError = require("../../../utils/ApiError");
 const bcrypt = require("bcrypt");
+const { sanatizeUser } = require("../../../utils/sanatizeUser");
 // @desc Create User
 exports.createUser = factory.createOne(UserModel);
 
@@ -59,4 +60,13 @@ exports.changePassword = asyncHandler(async (req, res, next) => {
     );
   }
   res.status(200).json({ data: document });
+});
+
+exports.getMyProfile = asyncHandler(async (req, res, next) => {
+  const userId = req.params.id;
+  const user = await UserModel.findById(userId);
+  if (!user) {
+    return next(new ApiError(`No User found with ID ${userId}`, 404));
+  }
+  res.status(200).json({ ...sanatizeUser(user) });
 });

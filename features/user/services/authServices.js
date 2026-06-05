@@ -7,6 +7,7 @@ const ApiError = require("../../../utils/ApiError");
 // @ts-ignore
 const bcrypt = require("bcrypt");
 const sendEmail = require("../../../utils/sendEmail");
+const {sanatizeUser} = require("../../../utils/sanatizeUser");
 
 const generateToken = (id) => {
   // @ts-ignore
@@ -15,18 +16,6 @@ const generateToken = (id) => {
   });
 };
 
-const sanatizeUser = function (user) {
-  return {
-    _id: user._id,
-    name: user.name,
-    email: user.email,
-    role: user.role,
-    phone: user.phone,
-    image: user.image,
-    address: user.address,
-    isActive: user.isActive,
-  };
-};
 
 exports.signup = asyncHandler(async (req, res) => {
   // create user
@@ -61,7 +50,7 @@ exports.protect = asyncHandler(async (req, res, next) => {
     accessToken = req.headers.authorization.split(" ")[1];
   }
   if (!accessToken) {
-    return next(new ApiError("You are not logged in", 401));
+    return next(new ApiError("Please login and provide valid token", 401));
   }
   // 2) verify token and is not expired
 
@@ -202,4 +191,6 @@ exports.resetPassword = asyncHandler(async (req, res, next) => {
     ...sanatizeUser(user),
   });
 });
+
+
 

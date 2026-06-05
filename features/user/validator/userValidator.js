@@ -122,7 +122,7 @@ exports.changePasswordValidator = [
       if (!user) {
         throw new ApiError("No user found with ID", 404);
       }
-      const isMatched = await bcrypt.compare(currentPassword, user.password );
+      const isMatched = await bcrypt.compare(currentPassword, user.password);
       if (!isMatched) {
         throw new ApiError("Incorrect current password", 401);
       }
@@ -142,5 +142,10 @@ exports.changePasswordValidator = [
   check("confirmPassword")
     .notEmpty()
     .withMessage("Confirm password is required"),
+  validatorMiddleware,
+];
+
+exports.getMyProfileValidator = [
+  check("id").isMongoId().withMessage("Invalid user ID"),
   validatorMiddleware,
 ];
