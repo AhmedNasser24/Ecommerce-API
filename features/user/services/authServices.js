@@ -157,3 +157,49 @@ exports.forgetPassword = asyncHandler(async (req, res, next) => {
     message: "Password reset code sent to your email",
   });
 });
+
+exports.verifyResetCode = asyncHandler(async (req, res, next) => {
+  const hashedResetCode = crypto
+    .createHash("sha256")
+    .update(req.body.resetCode)
+    .digest("hex");
+  const user = await UserModel.findOne({
+    email: req.body.email,
+    passwordResetCode: hashedResetCode,
+    passwordResetExpires: { $gt: Date.now() },
+  });
+  if (!user) {
+    return next(new ApiError("Invalid or expired reset code", 400));
+  }
+  user.passwordResetCodeVerified = true;
+  await user.save();
+  res.status(200).json({
+    status: "success",
+    message: "Password reset code verified successfully",
+  });
+});
+
+exports.resetPassword = asyncHandler(async (req, res, next) => {
+  const user = await UserModel.findOne({
+    email: req.body.email,
+    passwordResetCodeVerified: true,
+  });
+  if (!user) {
+    return next(new ApiError("User not found or you must verify reset code first", 404));
+  }
+  user.password = req.body.newPassword; // will hash in mongoose middleware
+  user.passwordResetCode = undefined;
+  user.passwordResetExpires = undefined;
+  user.passwordResetCodeVerified = undefined;
+  
+  const accessToken = generateToken(user._id);
+  // @ts-ignore
+  user.passwordChangedAt = Date.now();
+  await user.save();
+  res.status(200).json({
+    status: "success",
+    accessToken,
+    ...sanatizeUser(user),
+  });
+});
+

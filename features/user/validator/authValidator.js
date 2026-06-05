@@ -83,25 +83,35 @@ exports.forgetPasswordValidator = [
   validatorMiddleware,
 ];
 
-// exports.verifyResetCodeValidator = [
-//   check("email")
-//     .notEmpty()
-//     .withMessage("Email is required")
-//     .isEmail()
-//     .withMessage("Invalid email address")
-//     .custom(async (email) => {
-//       const existingUser = await UserModel.findOne({ email });
-//       if (!existingUser) {
-//         throw new Error("User not found");
-//       }
-//       return true;
-//     }),
-//   check("resetCode")
-//     .notEmpty()
-//     .withMessage("Reset code is required")
-//     .isLength({ min: 6 })
-//     .withMessage("Reset code must be at least 6 characters long")
-//     .isLength({ max: 6 })
-//     .withMessage("Reset code must be at most 6 characters long"),
-//   validatorMiddleware,
-// ];
+exports.verifyResetCodeValidator = [
+  check("email")
+    .notEmpty()
+    .withMessage("Email is required")
+    .isEmail()
+    .withMessage("Invalid email address"),
+  check("resetCode").notEmpty().withMessage("Reset code is required"),
+  validatorMiddleware,
+];
+
+exports.resetPasswordValidator = [
+  check("email")
+    .notEmpty()
+    .withMessage("Email is required")
+    .isEmail()
+    .withMessage("Invalid email address"),
+  check("newPassword")
+    .notEmpty()
+    .withMessage("Password is required")
+    .isLength({ min: 6 })
+    .withMessage("Password must be at least 6 characters long"),
+  check("confirmPassword")
+    .notEmpty()
+    .withMessage("Confirm password is required")
+    .custom(async (confirmPassword, { req }) => {
+      if (req.body.newPassword !== confirmPassword) {
+        throw new Error("Passwords do not match");
+      }
+      return true;
+    }),
+  validatorMiddleware,
+];
