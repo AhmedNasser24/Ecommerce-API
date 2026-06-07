@@ -18,14 +18,38 @@ const {
   resizeImage,
 } = require("../services/brandServices");
 
+const authService = require("../../user/services/authServices");
+
 router.get("/", getBrands);
 
 router.get("/:id", getBrandValidator, getBrand);
 
-router.post("/", uploadBrandImage, resizeImage, createBrandValidator, createBrand);
+router.post(
+  "/",
+  authService.protect,
+  authService.allowTo("admin"),
+  uploadBrandImage,
+  resizeImage,
+  createBrandValidator,
+  createBrand,
+);
 
-router.put("/:id", uploadBrandImage, resizeImage, updateBrandValidator, updateBrand);
+router.put(
+  "/:id",
+  authService.protect,
+  authService.allowTo("admin"),
+  uploadBrandImage,
+  resizeImage,
+  updateBrandValidator,
+  updateBrand,
+);
 
-router.delete("/:id", deleteBrandValidator, deleteBrand);
+router.delete(
+  "/:id",
+  authService.protect,
+  authService.allowTo("admin"),
+  deleteBrandValidator,
+  deleteBrand,
+);
 
 module.exports = router;

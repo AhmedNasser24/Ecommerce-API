@@ -9,8 +9,11 @@ const brandRoutes = require("./features/brand/routes/brandRoute");
 const productRoutes = require("./features/product/routes/productRoutes");
 const dbConnection = require("./config/database");
 const userRoutes = require("./features/user/routes/userRoutes");
+const authRoutes = require("./features/user/routes/authRoutes");
 const ApiError = require("./utils/ApiError");
 const { errorHandler } = require("./middlewares/errorMiddleWare");
+
+
 const app = express();
 // security
 const { rateLimiterMiddlewareSecurity } = require("./security/rateLimiter");
@@ -41,6 +44,7 @@ app.use("/api/v1/subcategories", subcategoryRoutes);
 app.use("/api/v1/brands", brandRoutes);
 app.use("/api/v1/products", productRoutes);
 app.use("/api/v1/users", userRoutes);
+app.use("/api/v1/auth", authRoutes);
 
 // handle routes that are not defined
 app.all('*splat', (req, res, next) => {
