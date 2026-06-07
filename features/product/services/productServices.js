@@ -52,7 +52,7 @@ exports.getAllProducts = factory.getAll(ProductModel, "Product");
 // @desc    Get specific product by ID
 // @route   GET /api/products/:id
 // @access  Public
-exports.getProduct = factory.getOne(ProductModel, "category subcategory");
+exports.getProduct = factory.getOne(ProductModel);
 
 // @desc    Update product by ID
 // @route   PUT /api/products/:id

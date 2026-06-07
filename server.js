@@ -10,6 +10,7 @@ const productRoutes = require("./features/product/routes/productRoutes");
 const dbConnection = require("./config/database");
 const userRoutes = require("./features/user/routes/userRoutes");
 const authRoutes = require("./features/user/routes/authRoutes");
+const reviewRoutes = require("./features/review/routes/reviewRoutes");
 const ApiError = require("./utils/ApiError");
 const { errorHandler } = require("./middlewares/errorMiddleWare");
 
@@ -17,18 +18,20 @@ const { errorHandler } = require("./middlewares/errorMiddleWare");
 const app = express();
 // security
 const { rateLimiterMiddlewareSecurity } = require("./security/rateLimiter");
-const { hppMiddlewareSecurity } = require("./security/hpp");
-const expressMongoSanitize = require("express-mongo-sanitize");
-const xss = require("xss-clean");
+const { hppMiddlewareSecurity  } = require("./security/hpp");
+// const expressMongoSanitize = require("express-mongo-sanitize");
+// const xss = require("xss-clean");
 
 dbConnection();
 // Middleware
 app.set("query parser", "extended");  // allows to use gte, gt, lte, lt in query strings
+
+// security
 app.use(express.json({ limit: "10kb" })); 
 app.use(rateLimiterMiddlewareSecurity);
 app.use(hppMiddlewareSecurity);
-app.use(expressMongoSanitize());
-app.use(xss());
+// app.use(expressMongoSanitize());
+// app.use(xss());
 
 // parse request body into JSON
 app.use(express.static(path.join(__dirname, "uploads"))); // serve static files like images
@@ -45,6 +48,7 @@ app.use("/api/v1/brands", brandRoutes);
 app.use("/api/v1/products", productRoutes);
 app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/auth", authRoutes);
+app.use("/api/v1/reviews", reviewRoutes);
 
 // handle routes that are not defined
 app.all('*splat', (req, res, next) => {

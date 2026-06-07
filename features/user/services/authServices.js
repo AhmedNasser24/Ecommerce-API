@@ -73,6 +73,7 @@ exports.protect = asyncHandler(async (req, res, next) => {
     // تحويل التاريخ لثوانٍ لمقارنته مع iat
     // @ts-ignore
     const passwordChangedTimestamp = parseInt(
+      // @ts-ignore
       currentUser.passwordChangedAt.getTime() / 1000,
       10,
     );
