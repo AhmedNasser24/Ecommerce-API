@@ -30,3 +30,5 @@ VALIDATOR_FILE="$BASE_DIR/$FEATURE_NAME/validator/${FEATURE_NAME}Validator.js"
 ROUTE_FILE="$BASE_DIR/$FEATURE_NAME/routes/${FEATURE_NAME}Routes.js"
 echo "✅ Feature: $FEATURE_NAME created successfully!"
 echo "📂 Folders: models, services, validator, routes"
+
+# ./make-feature.sh <feature-name>  
