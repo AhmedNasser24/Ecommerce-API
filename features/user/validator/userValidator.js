@@ -88,7 +88,6 @@ exports.updateUserValidator = [
       req.body.slug = slugify(name);
       return true;
     }),
-
   check("phone")
     .optional()
     .isMobilePhone("ar-EG")
@@ -103,6 +102,10 @@ exports.updateUserValidator = [
     .withMessage("Role must be user or admin"),
   check("image").optional(),
   check("address").optional(),
+
+  // Prevent updating these fields in this endpoint
+  check("email").isEmpty().withMessage("Email cannot be changed in this endpoint"),
+  check("password").isEmpty().withMessage("Password cannot be changed in this endpoint"),
   validatorMiddleware,
 ];
 
@@ -111,7 +114,14 @@ exports.changePasswordValidator = [
     .notEmpty()
     .withMessage("User ID is required")
     .isMongoId()
-    .withMessage("Invalid user ID"),
+    .withMessage("Invalid user ID")
+    .custom(async (userId, { req }) => {
+      // Ensure that the user is changing their own password or is an admin
+      if (userId.toString() !== req.user._id.toString() && req.user.role !== "admin") {
+        throw new ApiError("You are not authorized to change this password", 401);
+      }
+      return true;
+    }),
   check("currentPassword")
     .notEmpty()
     .withMessage("Current Password is required")
@@ -146,7 +156,16 @@ exports.changePasswordValidator = [
 ];
 
 exports.getMyProfileValidator = [
-  check("id").isMongoId().withMessage("Invalid user ID"),
+  check("id")
+  .isMongoId()
+  .withMessage("Invalid user ID")
+  .custom(async (userId, { req }) => {
+    // Ensure that the user is getting their own profile
+    if (userId.toString() !== req.user._id.toString()) {
+      throw new ApiError("can't get other user's profile", 401);
+    }
+    return true;
+  }),
   validatorMiddleware,
 ];
 
@@ -155,7 +174,14 @@ exports.updateMyProfileValidator = [
     .notEmpty()
     .withMessage("User ID is required")
     .isMongoId()
-    .withMessage("Invalid user ID"),
+    .withMessage("Invalid user ID")
+    .custom(async (userId, { req }) => {
+      // Ensure that the user is updating their own profile
+      if (userId.toString() !== req.user._id.toString()) {
+        throw new ApiError("can't update other user's profile", 401);
+      }
+      return true;
+    }),
   check("name")
     .optional()
     .isLength({ min: 3 })
@@ -173,6 +199,12 @@ exports.updateMyProfileValidator = [
     ,
   check("image").optional(),
   check("address").optional(),
+
+  // Prevent updating these fields in this endpoint
+  check("password").isEmpty().withMessage("Password cannot be changed in this endpoint"),
+  check("email").isEmpty().withMessage("Email cannot be changed in this endpoint"),
+  check("role").isEmpty().withMessage("Role cannot be changed in this endpoint"),
+  
   validatorMiddleware,
 ];
 

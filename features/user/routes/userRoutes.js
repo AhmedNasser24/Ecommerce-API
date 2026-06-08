@@ -31,10 +31,26 @@ router
   .get(authService.allowTo("admin"), getUser)
   .put(authService.allowTo("admin"), updateUserValidator, updateUser)
   .delete(authService.allowTo("admin"), deleteUserValidator, deleteUser);
-router.put("/changePassword/:id", changePasswordValidator, changePassword);
+  
+router.put(
+  "/changePassword/:id",
+  authService.allowTo("user", "admin"),
+  changePasswordValidator,
+  changePassword,
+);
 
+// Profile Routes
+// to allow user and admin to change their own profiles
 router
   .route("/profile/:id")
-  .get(getMyProfileValidator, getMyProfile)
-  .put(updateMyProfileValidator, updateMyProfile);
+  .get(
+    authService.allowTo("user", "admin"),
+    getMyProfileValidator,
+    getMyProfile,
+  )
+  .put(
+    authService.allowTo("user", "admin"),
+    updateMyProfileValidator,
+    updateMyProfile,
+  );
 module.exports = router;

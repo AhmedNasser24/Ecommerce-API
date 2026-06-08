@@ -50,7 +50,7 @@ exports.protect = asyncHandler(async (req, res, next) => {
     accessToken = req.headers.authorization.split(" ")[1];
   }
   if (!accessToken) {
-    return next(new ApiError("Please login and provide valid token", 401));
+    return next(new ApiError("Please login or provide a valid token", 401));
   }
   // 2) verify token and is not expired
 
