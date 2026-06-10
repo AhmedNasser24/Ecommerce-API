@@ -16,6 +16,13 @@ const {
   deleteProductValidator,
 } = require("../validator/productValidator");
 const authService = require("../../user/services/authServices");
+const reviewRoute = require("../../review/routes/reviewRoutes")  ;
+
+
+router.use("/:productId/reviews", reviewRoute) ;
+
+
+
 router.get("/", getAllProducts);
 router.get("/:id", getProductValidator, getProduct);
 router.post("/", authService.protect, authService.allowTo("admin"),uploadProductImages,resizeProductImages, createProductValidator, createProduct);

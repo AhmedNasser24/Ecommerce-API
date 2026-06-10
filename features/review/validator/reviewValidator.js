@@ -4,6 +4,23 @@ const {
 } = require("../../../middlewares/validatorMiddleware");
 const ReviewModel = require("../models/reviewModels");
 const ApiError = require("../../../utils/ApiError");
+const ProductModel = require("../../product/models/productModels");
+
+exports.getAllReviewsForSpecificProductValidator = [
+  check("productId")
+    .notEmpty()
+    .withMessage("Product ID is required")
+    .isMongoId()
+    .withMessage("Invalid Product ID format")
+    .custom(async(productId, { req }) => {
+      const product = await ProductModel.findById(productId);
+      if (!product) {
+        throw new ApiError("No product found with ID" + productId, 404);
+      }
+      return true;
+    }),
+  validatorMiddleware,
+];
 
 exports.createReviewValidator = [
   check("comment")

@@ -2,19 +2,21 @@ const express = require("express");
 const {
   createReview,
   getReview,
-  getAllReviews,
+  getAllReviewsForSpecificProduct,
   updateReview,
   deleteReview,
+  createFilterObj,
 } = require("../services/reviewServices");
 const {
   createReviewValidator,
   getReviewValidator,
   updateReviewValidator,
   deleteReviewValidator,
+  getAllReviewsForSpecificProductValidator,
 } = require("../validator/reviewValidator");
 const AuthServices = require("../../user/services/authServices");
 
-const router = express.Router();
+const router = express.Router({ mergeParams: true });
 
 router.post(
   "/",
@@ -23,7 +25,12 @@ router.post(
   createReviewValidator,
   createReview,
 );
-router.get("/", getAllReviews);
+router.get(
+  "/",
+  getAllReviewsForSpecificProductValidator,
+  createFilterObj,
+  getAllReviewsForSpecificProduct,
+);
 router.get("/:id", getReviewValidator, getReview);
 router.put(
   "/:id",

@@ -3,10 +3,18 @@ const asyncHandler = require("express-async-handler");
 const ReviewModel = require("../models/reviewModels");
 
 
+exports.createFilterObj = asyncHandler(async (req, res, next) => {
+    if(req.params.productId){
+        // @ts-ignore
+        req.filterObj = {product:req.params.productId};
+    }
+    next();
+})
+
 // @desc    Get all reviews
 // @route   GET /api/v1/reviews
 // @access  Private
-exports.getAllReviews = factory.getAll(ReviewModel);
+exports.getAllReviewsForSpecificProduct = factory.getAll(ReviewModel);
 
 // @desc    Get specific review by id
 // @route   GET /api/v1/reviews/:id
