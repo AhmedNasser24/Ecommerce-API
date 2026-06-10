@@ -11,6 +11,7 @@ const subcategoryRoutes = require("./features/subcategory/routes/subcategoryRout
 const brandRoutes = require("./features/brand/routes/brandRoute");
 const productRoutes = require("./features/product/routes/productRoutes");
 const userRoutes = require("./features/user/routes/userRoutes");
+const profileRoutes = require("./features/user/routes/profileRoutes");
 const authRoutes = require("./features/user/routes/authRoutes");
 const reviewRoutes = require("./features/review/routes/reviewRoutes");
 const addressesRoutes = require("./features/user/routes/addressesRoutes");
@@ -50,6 +51,8 @@ app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/reviews", reviewRoutes);
 app.use("/api/v1/addresses", addressesRoutes);
+app.use("/api/v1/profile", profileRoutes);
+
 // handle routes that are not defined
 app.all('*splat', (req, res, next) => {
   next(new ApiError("Route Not Found :" + req.originalUrl, 404));

@@ -47,26 +47,3 @@ exports.changePassword = asyncHandler(async (req, res, next) => {
 });
 
 //
-exports.getMyProfile = asyncHandler(async (req, res, next) => {
-  const userId = req.params.id;
-  const user = await UserModel.findById(userId);
-  if (!user) {
-    return next(new ApiError(`No User found with ID ${userId}`, 404));
-  }
-  res.status(200).json({ ...sanatizeUser(user) });
-});
-
-exports.updateMyProfile = asyncHandler(async (req, res, next) => {
-  const user = await UserModel.findByIdAndUpdate(
-    req.params.id,
-    req.body,
-    {
-      new: true,
-      runValidators: true,
-    },
-  );
-  if (!user) {
-    return next(new ApiError(`No User found with ID ${req.params.id}`, 404));
-  }
-  res.status(200).json({ ...sanatizeUser(user) });
-});

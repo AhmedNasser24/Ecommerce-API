@@ -5,8 +5,7 @@ const {
   deleteUserValidator,
   updateUserValidator,
   changePasswordValidator,
-  getMyProfileValidator,
-  updateMyProfileValidator,
+
 } = require("../validator/userValidator");
 const {
   getAllUsers,
@@ -15,8 +14,7 @@ const {
   updateUser,
   deleteUser,
   changePassword,
-  getMyProfile,
-  updateMyProfile,
+
 } = require("../services/userServices");
 const authService = require("../services/authServices");
 router.use(authService.protect);
@@ -39,18 +37,5 @@ router.put(
   changePassword,
 );
 
-// Profile Routes
-// to allow user and admin to change their own profiles
-router
-  .route("/profile/:id")
-  .get(
-    authService.allowTo("user", "admin"),
-    getMyProfileValidator,
-    getMyProfile,
-  )
-  .put(
-    authService.allowTo("user", "admin"),
-    updateMyProfileValidator,
-    updateMyProfile,
-  );
+
 module.exports = router;

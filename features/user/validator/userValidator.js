@@ -155,56 +155,5 @@ exports.changePasswordValidator = [
   validatorMiddleware,
 ];
 
-exports.getMyProfileValidator = [
-  check("id")
-  .isMongoId()
-  .withMessage("Invalid user ID")
-  .custom(async (userId, { req }) => {
-    // Ensure that the user is getting their own profile
-    if (userId.toString() !== req.user._id.toString()) {
-      throw new ApiError("can't get other user's profile", 401);
-    }
-    return true;
-  }),
-  validatorMiddleware,
-];
 
-exports.updateMyProfileValidator = [
-  check("id")
-    .notEmpty()
-    .withMessage("User ID is required")
-    .isMongoId()
-    .withMessage("Invalid user ID")
-    .custom(async (userId, { req }) => {
-      // Ensure that the user is updating their own profile
-      if (userId.toString() !== req.user._id.toString()) {
-        throw new ApiError("can't update other user's profile", 401);
-      }
-      return true;
-    }),
-  check("name")
-    .optional()
-    .isLength({ min: 3 })
-    .withMessage("Name must be at least 3 characters long")
-    .isLength({ max: 32 })
-    .withMessage("Name must be at most 32 characters long")
-    .custom((name, { req }) => {
-      req.body.slug = slugify(name);
-      return true;
-    }),
-  check("phone")
-    .optional()
-    .isMobilePhone("ar-EG")
-    .withMessage("Invalid phone number")
-    ,
-  check("image").optional(),
-  check("address").optional(),
-
-  // Prevent updating these fields in this endpoint
-  check("password").isEmpty().withMessage("Password cannot be changed in this endpoint"),
-  check("email").isEmpty().withMessage("Email cannot be changed in this endpoint"),
-  check("role").isEmpty().withMessage("Role cannot be changed in this endpoint"),
-  
-  validatorMiddleware,
-];
 
