@@ -5,8 +5,6 @@ const factory = require("../../../utils/handlersFactory");
 
 // Middleware to set category ID to body for nested creation
 exports.setCategoryIdToBody = (req, res, next) => {
-  console.log("---params----", req.params);
-  // console.log("---body0----", req.body.category);
   if (!req.params.categoryId) {
     req.body.category = req.params.categoryId;
   }

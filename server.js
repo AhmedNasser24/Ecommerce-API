@@ -2,18 +2,18 @@ const path = require("path");
 const express = require("express");
 require("dotenv").config();
 const morgan = require("morgan");
+const ApiError = require("./utils/ApiError");
+const { errorHandler } = require("./middlewares/errorMiddleWare");
+const dbConnection = require("./config/database");
 
 const categoryRoutes = require("./features/category/routes/categoryRoute");
 const subcategoryRoutes = require("./features/subcategory/routes/subcategoryRoute");
 const brandRoutes = require("./features/brand/routes/brandRoute");
 const productRoutes = require("./features/product/routes/productRoutes");
-const dbConnection = require("./config/database");
 const userRoutes = require("./features/user/routes/userRoutes");
 const authRoutes = require("./features/user/routes/authRoutes");
 const reviewRoutes = require("./features/review/routes/reviewRoutes");
-const ApiError = require("./utils/ApiError");
-const { errorHandler } = require("./middlewares/errorMiddleWare");
-
+const addressesRoutes = require("./features/user/routes/addressesRoutes");
 
 const app = express();
 // security
@@ -49,7 +49,7 @@ app.use("/api/v1/products", productRoutes);
 app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/reviews", reviewRoutes);
-
+app.use("/api/v1/addresses", addressesRoutes);
 // handle routes that are not defined
 app.all('*splat', (req, res, next) => {
   next(new ApiError("Route Not Found :" + req.originalUrl, 404));

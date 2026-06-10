@@ -9,23 +9,23 @@ const { sanatizeUser } = require("../../../utils/sanatizeUser");
 exports.createUser = factory.createOne(UserModel);
 
 // @desc Get all Users
-// @access Private
+// @access Protected , admin
 exports.getAllUsers = factory.getAll(UserModel);
 
 // @desc Get specific User by ID
-// @access Private
+// @access protected , admin
 exports.getUser = factory.getOne(UserModel);
 
 // @desc Delete specific User by ID
-// @access Private
+// @access protected , admin
 exports.deleteUser = factory.deleteOne(UserModel);
 
 // @desc Update specific User by ID
-// @access Private
+// @access protected , admin
 exports.updateUser = factory.updateOne(UserModel);
 
 // @desc Change Password
-// @access public
+// @access protected , user,admin
 exports.changePassword = asyncHandler(async (req, res, next) => {
   const document = await UserModel.findByIdAndUpdate(
     req.params.id,
