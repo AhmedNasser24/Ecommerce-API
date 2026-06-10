@@ -37,6 +37,7 @@ exports.updateOne = (Model) =>
         new ApiError(`No document found with ID ${req.params.id}`, 404),
       );
     }
+    document.save();
     res.status(200).json({ data: document });
   });
 

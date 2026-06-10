@@ -41,17 +41,17 @@ exports.createReviewValidator = [
     .isMongoId()
     .withMessage("Invalid Product ID format")
     .custom(async(productId, { req }) => {
-      const review = await ReviewModel.findOne({
-        product: productId,
-        user: req.user._id.toString(),
-      });
-    //   console.log("review", review.length);
-      if (review) {
-        throw new ApiError(
-          "you can't make more than one review per product",
-          400,
-        );
-      }
+    //   const review = await ReviewModel.findOne({
+    //     product: productId,
+    //     user: req.user._id.toString(),
+    //   });
+    // //   console.log("review", review.length);
+    //   if (review) {
+    //     throw new ApiError(
+    //       "you can't make more than one review per product",
+    //       400,
+    //     );
+    //   }
       return true;
     }),
   check("user")

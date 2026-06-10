@@ -7,6 +7,15 @@ const CategoryModel = require("../../category/models/categoryModel");
 const BrandModel = require("../../brand/models/brandModel");
 const slugify = require("slugify");
 
+
+const notAllowToCreateOrUpdate = [
+  check("avgRating")
+    .isEmpty()
+    .withMessage("Avg rating is not allow to create or update"),
+  check("ratingsQuantity")
+    .isEmpty()
+    .withMessage("Ratings quantity is not allow to create or update"),
+];
 const createProductValidator = [
   check("title")
     .notEmpty()
@@ -101,6 +110,7 @@ const createProductValidator = [
     .optional()
     .isArray()
     .withMessage("Product images must be an array"),
+  ...notAllowToCreateOrUpdate,
   validatorMiddleware,
 ];
 
@@ -111,7 +121,98 @@ const getProductValidator = [
 
 const updateProductValidator = [
   check("id").isMongoId().withMessage("Invalid product ID"),
-  ...createProductValidator,
+  check("title")
+    .optional()
+   
+    .isLength({ min: 3 })
+    .withMessage("Product title must be at least 3 characters")
+    .isLength({ max: 32 })
+    .withMessage("Product title must be at most 32 characters")
+    .custom((title, { req }) => {
+      req.body.slug = slugify(title);
+      return true;
+    }),
+  check("price")
+    .optional()
+
+    .isNumeric()
+    .withMessage("Product price must be a number")
+    .custom((price, { req }) => {
+      if (price <= 0) {
+        throw new Error("Product price can't be negative or zero");
+      }
+      if (!req.body.priceAfterDiscount) {
+        req.body.priceAfterDiscount = price;
+      } else if (req.body.priceAfterDiscount > price) {
+        throw new Error(
+          "Product priceAfterDiscount must be less than product price",
+        );
+      }
+      return true;
+    }),
+  check("priceAfterDiscount")
+    .optional()
+    .isNumeric()
+    .withMessage("Product priceAfterDiscount must be a number")
+    .custom((value) => {
+      if (value <= 0) {
+        throw new Error("Product priceAfterDiscount can't be negative or zero");
+      }
+      return true;
+    }),
+
+  check("quantity")
+    .optional()
+    
+    .isNumeric()
+    .withMessage("Product quantity must be a number")
+    .custom((value) => {
+      if (value < 1) {
+        throw new Error("Product quantity must be at least 1");
+      }
+      return true;
+    }),
+  check("category")
+    .optional()
+    .isMongoId()
+    .withMessage("Invalid product category ID")
+    .custom(async (categoryId) => {
+      const category = await CategoryModel.findById(categoryId);
+      if (!category) {
+        throw new Error("Category not found");
+      }
+      return true;
+    }),
+  check("subcategory")
+    .optional()
+    .isMongoId()
+    .withMessage("Invalid product subcategory ID")
+    .custom(async (subId, { req }) => {
+      const subcategory = await SubCategoryModel.findById(subId);
+      if (!subcategory) {
+        throw new Error("Subcategory not found");
+      } else if (subcategory.category.toString() !== req.body.category) {
+        throw new Error("Subcategory is not belonging to this category");
+      }
+      return true;
+    }),
+  check("brand")
+    .optional()
+    .isMongoId()
+    .withMessage("Invalid product brand ID")
+    .custom(async (brandId) => {
+      const brand = await BrandModel.findById(brandId);
+      if (!brand) {
+        throw new Error("Brand  not found");
+      }
+      return true;
+    }),
+  check("coverImage").notEmpty().withMessage("Product cover image is required"),
+  check("images")
+    .optional()
+    .isArray()
+    .withMessage("Product images must be an array"),
+  ...notAllowToCreateOrUpdate,
   validatorMiddleware,
 ];
 

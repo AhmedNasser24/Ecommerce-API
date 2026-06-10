@@ -50,7 +50,15 @@ const ProductSchema = new mongoose.Schema({
     {
       type: String,
     },
-  ]
+  ],
+  avgRating :{
+    type: Number,
+    default: 0,
+  },
+  ratingsQuantity :{
+    type: Number,
+    default: 0,
+  }
 });
 
 
