@@ -36,13 +36,13 @@ reviewSchema.statics.calcAverageRatingAndQuantity = async function (productId) {
     },
     {
       $group: {
-        _id: null,
+        _id: "$product",
         avgRating: { $avg: "$rating" },
         ratingsQuantity: { $sum: 1 },
       },
     },
   ]);
-  console.log("result", result);
+  
   // @ts-ignore
   if (result.length >= 0) {
     await ProductModel.findByIdAndUpdate(productId, {
@@ -61,6 +61,7 @@ reviewSchema.post("save", async function () {
   // @ts-ignore
   await this.constructor.calcAverageRatingAndQuantity(this.product);
 });
+
 
 // the doc that is updated will be passed to the post middleware ( in case of findOneAndUpdate)
 reviewSchema.post("findOneAndDelete", async function (doc) {
