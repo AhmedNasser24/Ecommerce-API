@@ -57,14 +57,14 @@ const createProductValidator = [
       return true;
     }),
 
-  check("quantity")
+  check("stock")
     .notEmpty()
-    .withMessage("Product quantity is required")
+    .withMessage("Product stock is required")
     .isNumeric()
-    .withMessage("Product quantity must be a number")
+    .withMessage("Product stock must be a number")
     .custom((value) => {
       if (value < 1) {
-        throw new Error("Product quantity must be at least 1");
+        throw new Error("Product stock must be at least 1");
       }
       return true;
     }),
@@ -161,14 +161,14 @@ const updateProductValidator = [
       return true;
     }),
 
-  check("quantity")
+  check("stock")
     .optional()
     
     .isNumeric()
-    .withMessage("Product quantity must be a number")
+    .withMessage("Product stock must be a number")
     .custom((value) => {
-      if (value < 1) {
-        throw new Error("Product quantity must be at least 1");
+      if (value < 0) {
+        throw new Error("Product stock can't be negative");
       }
       return true;
     }),

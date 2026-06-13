@@ -28,10 +28,10 @@ const ProductSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "Brand",
   },
-  quantity : {
+  stock : {
     type : Number,
-    required : [true, "Product quantity is required"],
-    min : [1, "Product quantity must be at least 1"],
+    required : [true, "Product stock is required"],
+    min : [1, "Product stock must be at least 1"],
   },
   price: {
     type: Number,
@@ -41,6 +41,11 @@ const ProductSchema = new mongoose.Schema({
   priceAfterDiscount : {
     type: Number,
     min: [0, "Product price must be at least 0"],
+  },
+  sold : {
+    type: Number,
+    default: 0,
+    min: [0, "Product sold must be at least 0"],
   },
   coverImage : {
     type: String,
