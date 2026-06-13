@@ -11,7 +11,7 @@ const cartSchema = new mongoose.Schema(
     totalQuantity: Number,
     cartItems: [
       {
-        id : mongoose.Schema.Types.ObjectId,
+        id: mongoose.Schema.Types.ObjectId,
         product: {
           type: mongoose.Schema.Types.ObjectId,
           ref: "Product",
@@ -23,12 +23,21 @@ const cartSchema = new mongoose.Schema(
           required: [true, "Quantity is required"],
           min: [1, "Quantity must be at least 1"],
         },
+        price: {
+          type: Number,
+          required: [true, "Price is required"],
+          min: [0, "Price must be at least 0"],
+        },
+        priceAfterDiscount: {
+          type: Number,
+          required: [true, "Price after discount is required"],
+          min: [0, "Price after discount must be at least 0"],
+        },
       },
     ],
   },
   { timestamps: true },
 );
-
 
 const CartModel = mongoose.model("Cart", cartSchema);
 

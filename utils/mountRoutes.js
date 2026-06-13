@@ -9,6 +9,7 @@ const authRoutes = require("../features/user/routes/authRoutes");
 const reviewRoutes = require("../features/review/routes/reviewRoutes");
 const addressesRoutes = require("../features/user/routes/addressesRoutes");
 const couponRoutes = require("../features/cart/routes/couponsRoutes");
+const cartRoutes = require("../features/cart/routes/cartRoutes");
 
 const mountRoutes = (app) => {
   app.use("/api/v1/categories", categoryRoutes);
@@ -21,6 +22,7 @@ const mountRoutes = (app) => {
   app.use("/api/v1/addresses", addressesRoutes);
   app.use("/api/v1/profile", profileRoutes);
   app.use("/api/v1/coupons", couponRoutes);
+  app.use("/api/v1/cart", cartRoutes);
 };
 
 module.exports = mountRoutes;
