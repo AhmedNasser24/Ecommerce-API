@@ -8,7 +8,7 @@ const profileRoutes = require("../features/user/routes/profileRoutes");
 const authRoutes = require("../features/user/routes/authRoutes");
 const reviewRoutes = require("../features/review/routes/reviewRoutes");
 const addressesRoutes = require("../features/user/routes/addressesRoutes");
-const couponRoutes = require("../features/coupons/routes/couponsRoutes");
+const couponRoutes = require("../features/cart/routes/couponsRoutes");
 
 const mountRoutes = (app) => {
   app.use("/api/v1/categories", categoryRoutes);

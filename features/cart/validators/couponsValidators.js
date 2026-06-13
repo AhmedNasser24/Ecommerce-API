@@ -37,8 +37,15 @@ exports.createCouponValidator = [
     .withMessage("Coupon expire date is required")
     .isDate()
     .withMessage("Coupon expire date must be a date")
-    .trim(),
-
+    .trim()
+    .custom((date) => {
+      if (new Date(date).getTime() <= Date.now()) {
+        return Promise.reject(
+          new Error("Coupon expire date must be after creation date"),
+        );
+      }
+      return true;
+    }),
   validatorMiddleware,
 ];
 
@@ -72,7 +79,13 @@ exports.updateCouponValidator = [
     .optional()
     .isDate()
     .withMessage("Coupon expire date must be a date")
-    .trim(),
+    .trim()
+    .custom((date) => {
+      if (new Date(date).getTime() <= Date.now()) {
+        throw new Error("Coupon expire date must be after creation date");
+      }
+      return true;
+    }),
 
   validatorMiddleware,
 ];
