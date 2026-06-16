@@ -50,3 +50,13 @@ exports.updateCartItemQuantityValidator = [
     }),
   validatorMiddleware,
 ];
+
+exports.applyCouponValidator = [
+  check("couponId").isMongoId().withMessage("Invalid coupon item ID"),
+  check("couponName")
+    .notEmpty()
+    .withMessage("Coupon name is required")
+    .isString()
+    .withMessage("Invalid coupon name"),
+  validatorMiddleware,
+];

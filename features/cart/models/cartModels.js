@@ -9,6 +9,21 @@ const cartSchema = new mongoose.Schema(
     },
     totalPrice: Number,
     totalQuantity: Number,
+    totalPriceAfterDiscount: {
+      type: Number,
+      required: [true, "Price after discount is required"],
+      min: [0, "Price after discount must be at least 0"],
+    },
+    totalPriceAfterApplingCoupon: {
+      type: Number,
+      min: [0, "Price after appling coupon must be at least 0"],
+    },
+    discount: {
+      type: Number,
+      default: 0,
+      min: [0, "Discount must be at least 0"],
+      max: [100, "Discount must be at most 100"],
+    },
     cartItems: [
       {
         id: mongoose.Schema.Types.ObjectId,
