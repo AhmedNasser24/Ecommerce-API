@@ -4,45 +4,69 @@ const ProductModel = require("../../product/models/productModels");
 const ApiError = require("../../../utils/ApiError");
 // @desc add to cart
 // @access Private , user
-const addToCart = asyncHandler(async (req, res, next) => {
+
+// @ts-ignore
+const calcCartPriceAndQuantity = (cart) => {
+  let totalPrice = 0;
+  let totalQuantity = 0;
+  let totalPriceAfterDiscount = 0;
+
+  // @ts-ignore
+  cart.cartItems.forEach((item) => {
+    totalPrice += item.price * item.quantity;
+    totalQuantity += item.quantity;
+    totalPriceAfterDiscount += item.priceAfterDiscount * item.quantity;
+    // @ts-ignore
+    cart.totalPrice = totalPrice;
+    // @ts-ignore
+    cart.totalQuantity = totalQuantity;
+    // @ts-ignore
+    cart.totalPriceAfterDiscount = totalPriceAfterDiscount;
+  });
+};
+
+exports.updateCartItemQuantity = asyncHandler(async (req, res, next) => {
+  // @ts-ignore
+  const { productId, quantity } = req.body;
+  const { id } = req.params;
   // @ts-ignore
   const userId = req.user._id;
-  const { productId, quantity } = req.body;
-  // 1) if no cart for user create new cart
+
   let cart = await CartModel.findOne({ user: userId });
+
   if (!cart) {
-    cart = await CartModel.create({ user: userId, cartItems: [...req.body] });
+    return next(new ApiError("Cart not found", 404));
   }
-  // 2) if cart for user
-  const productIndex = cart.cartItems.findIndex(
-    (item) => item.product.toString() === productId,
+
+  const cartItemIndex = cart.cartItems.findIndex(
+    (item) => item._id.toString() === id,
   );
-  // 3) if product in cart already
-  if (productIndex !== -1) {
-    cart.cartItems[productIndex].quantity = quantity;
-  } else {
-    cart.cartItems.push({ product: productId, quantity: quantity });
+
+  if (cartItemIndex === -1) {
+    return next(new ApiError("Cart item not found", 404));
   }
-  // 4) update the cart prices
+  const product = await ProductModel.findById(req.body.productId);
+  if (!product) {
+    return next(new ApiError("Product not found", 404));
+  }
+  if (quantity > product.stock) {
+    return next(new ApiError("Quantity is out of stock", 400));
+  }
+  if (quantity == 0) {
+    return next(new ApiError("Quantity must be at least 1", 400));
+  }
+  cart.cartItems[cartItemIndex].quantity = quantity;
+
+  calcCartPriceAndQuantity(cart);
+
   await cart.save();
+
   res.status(200).json({
     status: "success",
-    message: "Cart item added successfully",
-    data: cart,
+    message: "Cart item updated successfully",
+    data: cart.cartItems[cartItemIndex],
   });
 });
-
-// exports.updateCartItemQuantity = asyncHandler(async (req, res, next) => {
-//   const { productId, quantity } = req.body;
-
-//   if (quantity == 0) {
-//     req.params.productId = productId;
-//     removeCartItem(req, res, next);
-//     return;
-//   } else {
-//     addToCart(req, res, next);
-//   }
-// });
 
 exports.addNewCartItem = asyncHandler(async (req, res, next) => {
   //   @ts-ignore
@@ -62,19 +86,22 @@ exports.addNewCartItem = asyncHandler(async (req, res, next) => {
   if (!cart) {
     cart = await CartModel.create({ user: userId, cartItems: [req.body] });
   }
-  const productIndex = cart.cartItems.findIndex(
+  let cartItemIndex = cart.cartItems.findIndex(
     (item) => item.product.toString() === productId,
   );
-  if (productIndex !== -1) {
-    cart.cartItems[productIndex] = req.body;
+  if (cartItemIndex !== -1) {
+    cart.cartItems[cartItemIndex] = req.body;
   } else {
     cart.cartItems.push(req.body);
+    cartItemIndex = cart.cartItems.length - 1;
   }
+
+  calcCartPriceAndQuantity(cart);
   await cart.save();
   res.status(200).json({
     status: "success",
     message: "Cart item added successfully",
-    data: cart,
+    data: cart.cartItems[cartItemIndex],
   });
 });
 
@@ -91,9 +118,31 @@ exports.removeCartItem = asyncHandler(async (req, res, next) => {
   if (!cart) {
     return next(new ApiError("Cart not found", 404));
   }
-
+  calcCartPriceAndQuantity(cart);
+  await cart.save();
   res.status(201).json({
     status: "success",
     message: "Cart item removed successfully",
+  });
+});
+
+exports.getLoggedUserCart = asyncHandler(async (req, res, next) => {
+  //   @ts-ignore
+  const userId = req.user._id;
+  const { populate } = req.query;
+  let query =  CartModel.findOne({ user: userId });
+  if (populate) {
+    // @ts-ignore
+    const populateOpt = populate.split(",").join(" ");
+    query = query.populate(populateOpt);
+  }
+  const cart = await query;
+  if (!cart) {
+    return next(new ApiError("Cart not found", 404));
+  }
+  res.status(200).json({
+    status: "success",
+    results: cart.cartItems.length,
+    data: cart,
   });
 });

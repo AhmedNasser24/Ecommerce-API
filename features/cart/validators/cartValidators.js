@@ -2,6 +2,7 @@ const { check } = require("express-validator");
 const {
   validatorMiddleware,
 } = require("../../../middlewares/validatorMiddleware");
+const ProductModel = require("../../product/models/productModels");
 
 exports.addNewCartItemValidator = [
   check("productId")
@@ -25,5 +26,27 @@ exports.addNewCartItemValidator = [
 
 exports.removeCartItemValidator = [
   check("id").isMongoId().withMessage("Invalid cart item ID"),
+  validatorMiddleware,
+];
+
+exports.updateCartItemQuantityValidator = [
+  check("id").isMongoId().withMessage("Invalid cart item ID"),
+  check("productId")
+    .notEmpty()
+    .withMessage("Product ID is required")
+    .isMongoId()
+    .withMessage("Invalid product ID"),
+  check("quantity")
+    .notEmpty()
+    .withMessage("Quantity is required")
+    .isNumeric()
+    .withMessage("Invalid quantity")
+    .custom(async (value, { req }) => {
+      if (value < 1) {
+        throw new Error("Quantity must be at least 1");
+      }
+      
+      return true;
+    }),
   validatorMiddleware,
 ];
