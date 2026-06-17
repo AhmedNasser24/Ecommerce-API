@@ -8,7 +8,7 @@ exports.sanatizeUser = function (user) {
     role: user.role,
     phone: user.phone,
     image: user.image,
-    address: user.address,
+    addresses: user.addresses,
     isActive: user.isActive,
     createdAt: user.createdAt,
     updatedAt: user.updatedAt,
