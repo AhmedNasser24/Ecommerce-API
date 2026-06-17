@@ -63,6 +63,10 @@ const ProductSchema = new mongoose.Schema({
   ratingsQuantity :{
     type: Number,
     default: 0,
+  },
+  isActive : {
+    type: Boolean,
+    default: true,
   }
 });
 

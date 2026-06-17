@@ -28,6 +28,8 @@ const calcCartPriceAndQuantity = (cart) => {
   });
 };
 
+exports.calcCartPriceAndQuantity = calcCartPriceAndQuantity;
+
 exports.updateCartItemQuantity = asyncHandler(async (req, res, next) => {
   // @ts-ignore
   const { productId, quantity } = req.body;
