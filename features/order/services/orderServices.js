@@ -4,7 +4,7 @@ const OrderModel = require("../models/orderModels");
 const ProductModel = require("../../product/models/productModels");
 const ApiError = require("../../../utils/ApiError");
 const { calcCartPriceAndQuantity } = require("../../cart/services/cartServices");
-
+const factory = require("../../../utils/handlersFactory");
 // @desc Create order
 // routes : api/v1/orders/:cartId
 // access : protected/user
@@ -110,3 +110,17 @@ const checkProductAvailability = async(cart) =>{
     
   }
 }
+
+exports.createFilterObj = asyncHandler(async (req, res, next) => {
+    // @ts-ignore
+    if (req.user.role == 'user') {
+      // @ts-ignore
+      req.filterObj = {user:req.user._id};
+    }
+   
+    next();
+})
+exports.getOrders = factory.getAll(OrderModel , "Order");
+
+exports.getOrder = factory.getOne(OrderModel);
+

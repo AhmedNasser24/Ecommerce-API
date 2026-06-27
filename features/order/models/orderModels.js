@@ -57,7 +57,10 @@ const orderSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-
+    isDelivered: {
+      type: Boolean,
+      default: false,
+    },
     orderStatus: {
       type: String,
       enum: ["pending", "processing", "delivered", "cancelled"],
@@ -83,16 +86,15 @@ const orderSchema = new mongoose.Schema(
     // shippedAt: {
     //   type : Date,
     // },
-    // createdAt: {
-    //   type : Date,
-    //   default: Date.now,
-    // },
-    // updatedAt: {
-    //   type : Date,
-    //   default: Date.now,
-    // },
   },
   { timestamps: true },
 );
+
+// populate the order with user and cart items
+orderSchema.pre(/^find/, function (next) {
+  this.populate({ path: "user", select: "name email phone" });
+  this.populate({ path: "cartItems.product", select: "title price" });
+  next;
+});
 
 module.exports = mongoose.model("Order", orderSchema);

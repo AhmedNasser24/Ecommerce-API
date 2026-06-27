@@ -23,3 +23,12 @@ exports.createOrderValidator = [
     }),
   validatorMiddleware,
 ];
+
+exports.getOrderValidator = [
+  check("id")
+    .notEmpty()
+    .withMessage("Order id is required")
+    .isMongoId()
+    .withMessage("Invalid order id"),
+  validatorMiddleware,
+];
