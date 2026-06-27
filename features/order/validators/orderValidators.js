@@ -32,3 +32,29 @@ exports.getOrderValidator = [
     .withMessage("Invalid order id"),
   validatorMiddleware,
 ];
+exports.updateOrderPayValidator = [
+  check("id")
+    .notEmpty()
+    .withMessage("Order id is required")
+    .isMongoId()
+    .withMessage("Invalid order id"),
+  check("isPaid")
+    .notEmpty()
+    .withMessage("Is paid is required")
+    .isBoolean()
+    .withMessage("Is paid must be a boolean"),
+  validatorMiddleware,
+];
+exports.updateOrderDeliverdValidator = [
+  check("id")
+    .notEmpty()
+    .withMessage("Order id is required")
+    .isMongoId()
+    .withMessage("Invalid order id"),
+  check("isDelivered")
+    .notEmpty()
+    .withMessage("isDelivered is required")
+    .isBoolean()
+    .withMessage("isDelivered must be a boolean"),
+  validatorMiddleware,
+];

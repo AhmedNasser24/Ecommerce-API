@@ -57,9 +57,15 @@ const orderSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+     paidAt: {
+      type: Date,
+    },
     isDelivered: {
       type: Boolean,
       default: false,
+    },
+    deliveredAt: {
+      type: Date,
     },
     orderStatus: {
       type: String,
@@ -77,12 +83,8 @@ const orderSchema = new mongoose.Schema(
         trim: true,
       },
     },
-    paidAt: {
-      type: Date,
-    },
-    // deliveredAt: {
-    //   type : Date,
-    // },
+   
+ 
     // shippedAt: {
     //   type : Date,
     // },
@@ -92,7 +94,9 @@ const orderSchema = new mongoose.Schema(
 
 // populate the order with user and cart items
 orderSchema.pre(/^find/, function (next) {
+  // @ts-ignore
   this.populate({ path: "user", select: "name email phone" });
+  // @ts-ignore
   this.populate({ path: "cartItems.product", select: "title price" });
   next;
 });

@@ -9,6 +9,7 @@ const factory = require("../../../utils/handlersFactory");
 // routes : api/v1/orders/:cartId
 // access : protected/user
 
+// @ts-ignore
 exports.createOrder = asyncHandler(async (req, res, next) => {
   // 1) get user cart
   const cart = await CartModel.findById(req.params.cartId);
@@ -28,6 +29,7 @@ exports.createOrder = asyncHandler(async (req, res, next) => {
       data: cart
     });
   }
+
   // 3) create order
   const { shippingAddress } = req.body;
   const order = await OrderModel.create({
@@ -124,3 +126,38 @@ exports.getOrders = factory.getAll(OrderModel , "Order");
 
 exports.getOrder = factory.getOne(OrderModel);
 
+exports.updateOrderPay = asyncHandler(async (req, res, next) => {
+  // @ts-ignore
+  const order = await OrderModel.findById(req.params.id);
+  if(!order){
+    return next(new ApiError("Order not found", 404));
+  }
+  order.isPaid = req.body.isPaid;
+  // @ts-ignore
+  order.paidAt = Date.now();
+  await order.save();
+  res.status(200).json({
+    status: "success",
+    data: {
+      order,
+    },
+  });
+})
+
+exports.updateOrderDeliverd = asyncHandler(async (req, res, next) => {
+  // @ts-ignore
+  const order = await OrderModel.findById(req.params.id);
+  if(!order){
+    return next(new ApiError("Order not found", 404));
+  }
+  order.isDelivered = req.body.isDelivered;
+  // @ts-ignore
+  order.deliveredAt = Date.now();
+  await order.save();
+  res.status(200).json({
+    status: "success",
+    data: {
+      order,
+    },
+  });
+})
