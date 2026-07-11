@@ -83,6 +83,9 @@ const orderSchema = new mongoose.Schema(
         trim: true,
       },
     },
+    paymobOrderId: {
+      type: String,
+    },
    
  
     // shippedAt: {
