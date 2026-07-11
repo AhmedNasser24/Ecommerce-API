@@ -31,4 +31,6 @@ router.get("/",authService.allowTo("admin", "user"), createFilterObj, getOrders)
 router.get("/:id",authService.allowTo("admin", "user"), getOrderValidator, getOrder);
 router.put("/:id/pay",authService.allowTo("admin"), updateOrderPayValidator, updateOrderPay);
 router.put("/:id/deliver",authService.allowTo("admin"), updateOrderDeliverdValidator, updateOrderDeliverd);
+
+
 module.exports = router;

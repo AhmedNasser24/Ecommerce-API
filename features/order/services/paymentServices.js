@@ -146,11 +146,12 @@ exports.paymobWebhook = asyncHandler(async (req, res) => {
 
   // The transaction object from Paymob
   const obj = req.body.obj;
-
+  console.log("-------------paymob webhook is started-----------------")
+  console.log("req.body is =>", req.body)
   if (!obj) {
     return res.status(400).json({ status: "fail", message: "Invalid payload" });
   }
-
+  console.log("-------------paymob webhook is recived-----------------")
   // Extract the specific fields Paymob uses for HMAC calculation
   // These fields must be concatenated in this exact order
   const hmacFields = [
@@ -198,41 +199,46 @@ exports.paymobWebhook = asyncHandler(async (req, res) => {
   const paymobOrderId = String(obj.order?.id);
   const order = await OrderModel.findOne({ paymobOrderId });
 
-  if (!order) {
-    console.error(`Order not found for paymobOrderId: ${paymobOrderId}`);
-    return res
-      .status(404)
-      .json({ status: "fail", message: "Order not found" });
-  }
+  // if (!order) {
+  //   console.error(`Order not found for paymobOrderId: ${paymobOrderId}`);
+  //   return res
+  //     .status(404)
+  //     .json({ status: "fail", message: "Order not found" });
+  // }
 
-  if (isSuccess) {
-    // Mark order as paid
-    order.isPaid = true;
-    // @ts-ignore
-    order.paidAt = Date.now();
-    order.orderStatus = "processing";
-    await order.save();
+  // if (isSuccess) {
+  //   // Mark order as paid
+  //   order.isPaid = true;
+  //   // @ts-ignore
+  //   order.paidAt = Date.now();
+  //   order.orderStatus = "processing";
+  //   await order.save();
 
-    // Update product stock (decrease) and increase sold
-    const bulkOption = order.cartItems.map((item) => ({
-      updateOne: {
-        filter: { _id: item.product },
-        update: { $inc: { stock: -item.quantity, sold: item.quantity } },
-      },
-    }));
-    if (bulkOption.length > 0) {
-      await ProductModel.bulkWrite(bulkOption);
-    }
+  //   // Update product stock (decrease) and increase sold
+  //   const bulkOption = order.cartItems.map((item) => ({
+  //     updateOne: {
+  //       filter: { _id: item.product },
+  //       update: { $inc: { stock: -item.quantity, sold: item.quantity } },
+  //     },
+  //   }));
+  //   if (bulkOption.length > 0) {
+  //     await ProductModel.bulkWrite(bulkOption);
+  //   }
 
-    console.log(`Order ${order._id} marked as paid via Paymob`);
-  } else {
-    // Payment failed
-    order.orderStatus = "cancelled";
-    await order.save();
-    console.log(`Order ${order._id} payment failed via Paymob`);
-  }
+  //   console.log(`Order ${order._id} marked as paid via Paymob`);
+  // } else {
+  //   // Payment failed
+  //   order.orderStatus = "cancelled";
+  //   await order.save();
+  //   console.log(`Order ${order._id} payment failed via Paymob`);
+  // }
 
   // Respond 200 to Paymob to acknowledge receipt
   res.status(200).json({ status: "success", message: "Webhook received" });
 });
+
+/* 
+npm i ngrok --legacy-peer-deps
+npx ngrok authtoken <your-authtoken>
+*/
 
